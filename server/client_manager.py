@@ -327,6 +327,7 @@ class ClientManager:
                     1) and self.char_id != char_id
             self.char_id = char_id
             self.pos = ""
+            self.area.shadow_status[self.char_id] = [self.ipid, self.hdid]
             self.send_command("PV", self.id, "CID", self.char_id)
             # Commented out due to potentially causing clientside lag...
             # self.area.send_command('CharsCheck',
@@ -783,6 +784,9 @@ class ClientManager:
             # Get prosecution HP bar
             self.send_command("HP", 2, self.area.hp_pro)
 
+            # Update Lastchar Information
+            self.area.shadow_status[self.char_id] = [self.ipid, self.hdid]
+
             # Send the background information
             if self.area.dark:
                 self.send_command("BN", self.area.background_dark, self.pos)
@@ -797,7 +801,7 @@ class ClientManager:
             # Update our judge buttons
             self.area.update_judge_buttons(self)
             self.refresh_music()
-            msg = f"🚶Changed to area: {self.get_area_info(self.area.id)}"
+            msg = f"Changed area to {self.get_area_info(self.area.id)}"
             if self.area.desc != "" and not self.blinded:
                 desc = self.area.desc[:128]
                 if len(self.area.desc) > len(desc):

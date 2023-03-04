@@ -19,12 +19,14 @@ __all__ = [
     "ooc_cmd_area_kick",
     "ooc_cmd_pos_lock",
     "ooc_cmd_pos_lock_clear",
-    "ooc_cmd_knock",
-    "ooc_cmd_peek",
+    #"ooc_cmd_knock",
+    #"ooc_cmd_peek",
     "ooc_cmd_max_players",
     "ooc_cmd_desc",
     "ooc_cmd_edit_ambience",
     "ooc_cmd_lights",
+    "ooc_cmd_link",
+    "ooc_cmd_update",
 ]
 
 
@@ -58,7 +60,7 @@ def ooc_cmd_bg(client, arg):
     except AreaError:
         raise
     client.area.broadcast_ooc(
-        f"{client.showname} changed the background to {arg}.")
+        f"{client.char_name} changed the background to {arg}.")
     database.log_area("bg", client, client.area, message=arg)
 
 
@@ -102,7 +104,7 @@ def ooc_cmd_status(client, arg):
             client.area.change_status(arg)
             client.area.broadcast_ooc(
                 "{} changed status to {}.".format(
-                    client.showname, client.area.status)
+                    client.char_name, client.area.status)
             )
             database.log_area("status", client, client.area, message=arg)
         except AreaError:
@@ -215,7 +217,7 @@ def ooc_cmd_invite(client, arg):
         msg = "Current invite list:\n"
         msg += "\n".join(
             [
-                f"[{c.id}] {c.showname}"
+                f"[{c.id}] {c.char_name}"
                 for c in client.server.client_manager.clients
                 if c.id in client.area.invite_list
             ]
@@ -243,7 +245,7 @@ def ooc_cmd_invite(client, arg):
     try:
         for c in targets:
             client.area.invite_list.add(c.id)
-            client.send_ooc(f"{c.showname} is invited to your area.")
+            client.send_ooc(f"{c.char_name} is invited to your area.")
             c.send_ooc(
                 f"You were invited and given access to {client.area.name}.")
             database.log_area("invite", client, client.area, target=c)
@@ -280,7 +282,7 @@ def ooc_cmd_uninvite(client, arg):
             for c in targets:
                 client.send_ooc(
                     "You have removed {} from the whitelist.".format(
-                        c.showname)
+                        c.char_name)
                 )
                 c.send_ooc("You were removed from the area whitelist.")
                 database.log_area("uninvite", client, client.area, target=c)
@@ -293,7 +295,7 @@ def ooc_cmd_uninvite(client, arg):
         client.send_ooc("No targets found.")
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_area_kick(client, arg):
     """
     Remove a user from the current area and move them to another area.
@@ -377,7 +379,7 @@ def ooc_cmd_area_kick(client, arg):
                 if len(args) >= 3:
                     target_pos = args[2]
                 client.send_ooc(
-                    f"Attempting to kick [{c.id}] {c.showname} from [{old_area.id}] {old_area.name} to [{area.id}] {area.name}."
+                    f"Attempting to kick [{c.id}] {c.char_name} from [{old_area.id}] {old_area.name} to [{area.id}] {area.name}."
                 )
                 c.set_area(area, target_pos)
                 c.send_ooc(
@@ -523,11 +525,11 @@ def ooc_cmd_knock(client, arg):
         area.send_command("RT", "knock")
         if area == client.area:
             area.broadcast_ooc(
-                f"💢 [{client.id}] {client.showname} knocks for attention. 💢"
+                f"💢 [{client.id}] {client.char_name} knocks for attention. 💢"
             )
         else:
             client.area.broadcast_ooc(
-                f"[{client.id}] {client.showname} knocks on [{area.id}] {area.name}."
+                f"[{client.id}] {client.char_name} knocks on [{area.id}] {area.name}."
             )
             area.broadcast_ooc(
                 f"💢 Someone is knocking from [{client.area.id}] {client.area.name} 💢"
@@ -581,7 +583,7 @@ def ooc_cmd_peek(client, arg):
                 and "locked" in str(ex).lower()
             ):
                 client.area.broadcast_ooc(
-                    f"[{client.id}] {client.showname} tried to peek into [{area.id}] {area.name} but {str(ex).lower()}"
+                    f"[{client.id}] {client.char_name} tried to peek into [{area.id}] {area.name} but {str(ex).lower()}"
                 )
                 # People from within the area have no distinction between peeking and moving inside
                 area.broadcast_ooc(
@@ -597,7 +599,7 @@ def ooc_cmd_peek(client, arg):
                     sorted_clients.append(c)
 
             _sort = [
-                c.showname for c in sorted(sorted_clients, key=lambda x: x.showname)
+                c.char_name for c in sorted(sorted_clients, key=lambda x: x.char_name)
             ]
 
             # this would be nice to be a separate "make human readable list" func
@@ -614,7 +616,7 @@ def ooc_cmd_peek(client, arg):
 
             if not client.sneaking and not client.hidden:
                 client.area.broadcast_ooc(
-                    f"[{client.id}] {client.showname} peeks into [{area.id}] {area.name}..."
+                    f"[{client.id}] {client.char_name} peeks into [{area.id}] {area.name}..."
                 )
             else:
                 client.send_ooc(
@@ -628,7 +630,7 @@ def ooc_cmd_peek(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_max_players(client, arg):
     """
     Set a max amount of players for current area between -1 and 99.
@@ -655,6 +657,7 @@ def ooc_cmd_max_players(client, arg):
         raise
 
 
+@mod_only(area_owners=True)
 def ooc_cmd_desc(client, arg):
     """
     Set an area description that appears to the user any time they enter the area.
@@ -666,7 +669,7 @@ def ooc_cmd_desc(client, arg):
         desc = client.area.desc
         if client.area.dark:
             desc = client.area.desc_dark
-        client.send_ooc(f"📃Description: {desc}")
+        client.send_ooc(f"Description: {desc}")
         database.log_area("desc.request", client, client.area)
     else:
         if client.area.cannot_ic_interact(client):
@@ -687,7 +690,7 @@ def ooc_cmd_desc(client, arg):
         if len(arg) > len(desc):
             desc += "... Use /desc to read the rest."
         client.area.broadcast_ooc(
-            f"📃{client.showname} changed the area description to: {desc}."
+            f"{client.char_name} changed the area description to: {desc}."
         )
         database.log_area("desc.change", client, client.area, message=arg)
 
@@ -751,3 +754,42 @@ def ooc_cmd_lights(client, arg):
             pos = client.area.pos_dark
         c.send_command("BN", bg, pos)
     client.send_ooc(f"This area is {stat} dark.")
+
+def ooc_cmd_link(client, arg):
+    """
+    Show a requested HTML link or a list of links.
+    Usage: /link [choice]
+    """
+    links_list = client.server.misc_data['links']
+
+    if links_list is None:
+        raise ClientError('miscdata.yaml is empty. Tell a mod.')
+    
+    if len(arg) == 0:
+        msg = 'Links available (use /link <option>):\n'
+        msg += "\n".join(links_list)
+        client.send_ooc(msg)
+    else:
+        arg = arg.lower()
+        choice = arg.capitalize()
+        if arg in links_list:
+            try:
+                if arg == 'update':
+                    client.send_ooc(f"Latest Update: {links_list[arg]}")
+                else:
+                    client.send_ooc(f"{choice}: {links_list[arg]}")
+                    database.log_area("link.request", client, client.area, message=arg)
+            except:
+                raise ClientError('Link has not been set!')
+        else:
+            raise ArgumentError('Link not found. Use /link to see possible choices.')
+        
+def ooc_cmd_update(client, arg):
+    """
+    See the link to the latest update.
+    Usage: /update
+    """
+    try:
+        client.send_ooc('Latest Update: {}'.format(client.server.misc_data['links']['update']))
+    except:
+        raise ClientError('Update not set!')
