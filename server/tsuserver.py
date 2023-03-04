@@ -104,6 +104,8 @@ class TsuServer3:
             self.load_music()
             self.load_backgrounds()
             self.load_ipranges()
+            self.load_gimps()
+            self.load_miscdata()
             self.hub_manager = HubManager(self)
         except yaml.YAMLError as exc:
             print("There was a syntax error parsing a configuration file:")
@@ -246,7 +248,7 @@ class TsuServer3:
                 and not client.hidden
             ):
                 area.broadcast_ooc(
-                    f"[{client.id}] {client.showname} has disconnected.")
+                    f"[{client.id}] {client.char_name} has disconnected.")
             area.remove_client(client)
         self.client_manager.remove_client(client)
 
@@ -347,6 +349,36 @@ class TsuServer3:
         except Exception:
             logger.debug("Cannot find iprange_ban.txt")
 
+    def load_gimps(self):
+        """Load gimp list."""
+        try:
+            with open('config/gimp.yaml', 'r', encoding='utf-8') as gmp:
+                self.gimp_list = yaml.safe_load(gmp)
+        except Exception:
+            logger.debug("Cannot find gimp list.")
+
+    def load_miscdata(self):
+        """Load misc data list for links etc."""
+        try:
+            with open('config/miscdata.yaml', 'r', encoding='utf-8') as miscdata:
+                self.misc_data = yaml.safe_load(miscdata)
+        except Exception:
+            logger.debug("Cannot find data file.")
+        
+        if "links" not in self.misc_data:
+            self.misc_data["links"] = {
+                "thread": "http://aovidya.pw",
+                "update": "http://aovidya.pw/downloads",
+            }
+    
+    def save_miscdata(self):
+        """Save misc data to file."""
+        try:
+            with open('config/miscdata.yaml', 'w') as miscdata:
+                yaml.dump(self.misc_data, miscdata, indent=4)
+        except Exception:
+            logger.debug("Cannot find data file.")
+
     def load_music_list(self):
         with open("config/music.yaml", "r", encoding="utf-8") as music:
             self.music_list = yaml.safe_load(music)
@@ -446,7 +478,7 @@ class TsuServer3:
         self.send_all_cmd_pred(
             "CT",
             self.config["hostname"],
-            f"=== Advert ===\r\n{client.name} in {client.area.name} [{client.area.id}] (Hub {client.area.area_manager.id}) needs {msg}\r\n===============",
+            f"=== Advert ===\r\n{client.char_name} in {client.area.name} [{client.area.id}] needs {msg}\r\n===============",
             "1",
             pred=lambda x: not x.muted_adverts,
         )
@@ -527,6 +559,8 @@ class TsuServer3:
          - Backgrounds
          - Commands
          - Banlists
+         - Gimp list
+         - Misc Data
         """
         with open("config/config.yaml", "r") as cfg:
             cfg_yaml = yaml.safe_load(cfg)
@@ -566,6 +600,8 @@ class TsuServer3:
         self.load_music()
         self.load_backgrounds()
         self.load_ipranges()
+        self.load_gimps()
+        self.load_miscdata()
 
         import server.commands
 

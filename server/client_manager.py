@@ -58,6 +58,9 @@ class ClientManager:
             self.evi_list = []
             self.disemvowel = False
             self.shaken = False
+            self.gimp = False
+            self.rainbow = False
+            self.dank = False
             self.charcurse = []
             self.muted_global = False
             self.muted_adverts = False
@@ -111,14 +114,14 @@ class ClientManager:
             # movement system stuff
             self.last_move_time = 0
             # If true, /getarea is called automatically when moving into a new area
-            self.autogetarea = True
+            self.autogetarea = False
 
             # client status stuff
             self._showname = ""
             self.blinded = False
             self._hidden = False
             self.hidden_in = None
-            self.sneaking = False
+            self.sneaking = True
             self.listen_pos = None
             self.following = None
             self.forced_to_follow = False
@@ -243,7 +246,7 @@ class ClientManager:
             """Send the message of the day to the client."""
             motd = self.server.config["motd"]
             if motd != "":
-                self.send_ooc(f"📟MOTD📟\r\n{motd}\r\n")
+                self.send_ooc(f"MOTD\r\n{motd}\r\n")
 
         def send_hub_info(self):
             """Send the hub info to the client."""
@@ -799,7 +802,7 @@ class ClientManager:
                 desc = self.area.desc[:128]
                 if len(self.area.desc) > len(desc):
                     desc += "... Use /desc to read the rest."
-                msg += f"\n📃Description: {desc}"
+                msg += f"\nDescription: {desc}"
             if self.autogetarea and not self.blinded:
                 try:
                     area_clients = self.get_area_clients(self.area.id)
@@ -1139,7 +1142,7 @@ class ClientManager:
 
         def send_area_list(self, full=False):
             """Send a list of areas over OOC."""
-            msg = "🗺️ Areas 🗺️"
+            msg = "Areas"
             area_list = self.get_area_list(full, full)
             for _, area in enumerate(area_list):
                 if area.hidden:
@@ -1288,7 +1291,7 @@ class ClientManager:
                     raise ClientError(
                         "You cannot see players in all areas in this hub!")
 
-            info = "🗺️ Clients in Areas 🗺️\n"
+            info = "= Clients in All Areas =\n"
             cnt = 0
             for i in range(len(self.area.area_manager.areas)):
                 area = self.area.area_manager.areas[i]
@@ -1299,6 +1302,8 @@ class ClientManager:
                 if not self.is_mod and self not in area.owners:
                     # We exclude hidden players here because we don't want them to count for the user count
                     client_list = [c for c in client_list if not c.hidden]
+                if mods:
+                    client_list = [c for c in client_list if c.is_mod]
 
                 area_info = f'{self.get_area_info(i)}:'
                 if area_info == "":
@@ -1334,7 +1339,7 @@ class ClientManager:
             if not self.is_mod and self not in self.area.owners:
                 if self.blinded:
                     raise ClientError("You are blinded!")
-            area_info = f'📍 Clients in {self.get_area_info(area_id)} 📍'
+            area_info = f'= Clients in {self.get_area_info(area_id)} ='
             try:
                 area_info += self.get_area_clients(area_id, mods, afk_check)
             except ClientError as ex:
@@ -1632,6 +1637,32 @@ class ClientManager:
             parts = message.split()
             random.shuffle(parts)
             return " ".join(parts)
+        
+        def gimp_message(self, message):
+            """Send a random message instead of entered text"""
+            import random
+            message = self.server.gimp_list
+            return random.choice(message)
+        
+        def rainbow_message(self, message):
+            """Rainbow color a message."""
+            # enumerate
+            import random
+            colors = ["~", "|", "º", "`", "√", "_", "№"]
+            parts = list(message)
+            return ''.join(random.choice(colors)+'{}'.format(x) for x in parts)
+
+        def dank_message(self, message):
+            """Dank a message."""
+            import random
+            meme = ['\U0001F602', '\U0001F64F', '\U0001F44F', '\U0001F64C', '\U0001F926', '\U0001F631', '\U0001F4AF']
+            rm = random.choice(meme)
+            message = re.sub(r'\b' + 'good' + r'\b', 'bussin', message, flags=re.IGNORECASE)
+            message = re.sub(r'\b' + 'bad' + r'\b', 'sus ඞඞ', message, flags=re.IGNORECASE)
+            message = re.sub('[bpg]', '\U0001F171', message, flags=re.IGNORECASE)
+            message = re.sub(r'\b' + 'yes' + r'\b', 'fr fr no cap', message, flags=re.IGNORECASE)
+            message += " " + rm + rm + rm
+            return re.sub(r'\s+', ' ', message)
 
     def __init__(self, server):
         self.clients = set()

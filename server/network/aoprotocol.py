@@ -653,11 +653,6 @@ class AOProtocol(asyncio.Protocol):
                     )
                     return
 
-        if text.replace(" ", "").startswith("(("):
-            self.client.send_ooc(
-                "Please, *please* use the OOC chat instead of polluting IC. Normal OOC is local to area. You can use /h to talk across the hub, or /g to talk across the entire server."
-            )
-            return
         # Scrub text and showname for bad words
         if (
             self.client.area.area_manager.censor_ic
@@ -907,10 +902,16 @@ class AOProtocol(asyncio.Protocol):
             return
 
         msg = dezalgo(text, self.server.zalgo_tolerance)
+        if self.client.gimp:
+            msg = self.client.gimp_message(msg)
         if self.client.shaken:
             msg = self.client.shake_message(msg)
         if self.client.disemvowel:
             msg = self.client.disemvowel_message(msg)
+        if self.client.dank:
+            msg = self.client.dank_message(msg)
+        if self.client.rainbow:
+            msg = self.client.rainbow_message(msg)
         if evidence:
             area = self.client.area
             try:
