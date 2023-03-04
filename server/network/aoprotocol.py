@@ -1685,6 +1685,7 @@ class AOProtocol(asyncio.Protocol):
         self.client.area.evi_list.add_evidence(
             self.client, args[0], args[1], args[2], "all"
         )
+        self.client.area.add_to_evidlog(self.client, 'added evidence')
         database.log_area("evidence.add", self.client, self.client.area)
         self.client.area.broadcast_evidence_list()
 
@@ -1699,6 +1700,7 @@ class AOProtocol(asyncio.Protocol):
         if not self.validate_net_cmd(args, self.ArgType.INT):
             return
         self.client.area.evi_list.del_evidence(self.client, int(args[0]))
+        self.client.area.add_to_evidlog(self.client, 'deleted evidence')
         database.log_area("evidence.del", self.client, self.client.area)
         self.client.area.broadcast_evidence_list()
 
@@ -1724,6 +1726,7 @@ class AOProtocol(asyncio.Protocol):
         evi = (args[1], args[2], args[3], "all")
 
         self.client.area.evi_list.edit_evidence(self.client, int(args[0]), evi)
+        self.client.area.add_to_evidlog(self.client, 'edited evidence')
         database.log_area("evidence.edit", self.client, self.client.area)
         self.client.area.broadcast_evidence_list()
 

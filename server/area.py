@@ -237,6 +237,7 @@ class Area:
         self.music_looper = None
         self.next_message_time = 0
         self.judgelog = []
+        self.evidlog = []
         self.music = ""
         self.music_player = ""
         self.music_player_ipid = -1
@@ -251,6 +252,7 @@ class Area:
         self.cards = dict()
         self.votes = dict()
         self.password = ""
+        self.shadow_status = {}
 
         self.jukebox_votes = []
         self.jukebox_prev_char_id = -1
@@ -951,7 +953,7 @@ class Area:
                 lst[4] = "}}}" + msg[2:]
                 self.testimony[idx] = tuple(lst)
                 self.broadcast_ooc(
-                    f"{client.showname} has amended Statement {idx+1}.")
+                    f"{client.char_name} has amended Statement {idx+1}.")
                 if not self.recording:
                     self.testimony_send(idx)
             except IndexError:
@@ -1169,7 +1171,7 @@ class Area:
             if len(scrunched) > 0 and scrunched.lower() == "end":
                 self.recording = False
                 self.broadcast_ooc(
-                    f"[{client.id}] {client.showname} has ended the testimony."
+                    f"[{client.id}] {client.char_name} has ended the testimony."
                 )
                 self.send_command("RT", "testimony1", 1)
                 return
@@ -1665,7 +1667,7 @@ class Area:
         self.status = value.upper()
         self.area_manager.send_arup_status()
 
-    def change_doc(self, doc="No document."):
+    def change_doc(self, doc="No document. Find a template at https://aovidya.pw/templates"):
         """
         Set the doc link.
         :param doc: doc link (Default value = 'No document.')
@@ -1681,6 +1683,16 @@ class Area:
         if len(self.judgelog) >= 10:
             self.judgelog = self.judgelog[1:]
         self.judgelog.append(f"{client.char_name} ({client.ip}) {msg}.")
+    
+    def add_to_evidlog(self, client, msg):
+        """
+        Append an event to the evidence log (max 10 items).
+        :param client: event origin
+        :param msg: event message
+        """
+        if len(self.evidlog) >= 10:
+            self.evidlog = self.evidlog[1:]
+        self.evidlog.append(f"{client.char_name} ({client.ip}) {msg}.")
 
     def add_music_playing(self, client, name, showname="", autoplay=None):
         """
@@ -1746,7 +1758,7 @@ class Area:
         self.update_judge_buttons(client)
 
         self.broadcast_ooc(
-            f"{client.showname} [{client.id}] is CM in this area now.")
+            f"{client.char_name} [{client.id}] is CM in this area now.")
 
     def remove_owner(self, client, dc=False):
         """
@@ -1782,7 +1794,7 @@ class Area:
             self.update_judge_buttons(client)
 
         self.broadcast_ooc(
-            f"{client.showname} [{client.id}] is no longer CM in this area."
+            f"{client.char_name} [{client.id}] is no longer CM in this area."
         )
 
     def broadcast_area_list(self, client=None, refresh=False):

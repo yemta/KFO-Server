@@ -25,7 +25,9 @@ __all__ = [
     "ooc_cmd_blockwtce",
     "ooc_cmd_unblockwtce",
     "ooc_cmd_judgelog",
+    "ooc_cmd_evidlog",
     "ooc_cmd_afk",  # Not strictly casing - to be reorganized
+    "ooc_cmd_format",
     "ooc_cmd_remote_listen",  # Not strictly casing - to be reorganized
     "ooc_cmd_testimony",
     "ooc_cmd_testimony_start",
@@ -64,7 +66,7 @@ def ooc_cmd_doc(client, arg):
             raise ClientError("You may not do that while spectating!")
         client.area.change_doc(arg)
         client.area.broadcast_ooc(
-            f"{client.showname} changed the doc link to: {client.area.doc}"
+            f"{client.char_name} changed the doc link to: {client.area.doc}"
         )
         database.log_area("doc.change", client, client.area, message=arg)
 
@@ -86,7 +88,7 @@ def ooc_cmd_cleardoc(client, arg):
         raise ClientError("You may not do that while spectating!")
     client.area.change_doc()
     client.area.broadcast_ooc(
-        "{} cleared the doc link.".format(client.showname))
+        "{} cleared the doc link.".format(client.char_name))
     database.log_area("doc.clear", client, client.area)
 
 
@@ -371,7 +373,7 @@ def ooc_cmd_cm(client, arg):
                     )
                 elif c in client.area._owners:
                     client.send_ooc(
-                        f"{c.showname} [{c.id}] is already a CM here.")
+                        f"{c.char_name} [{c.id}] is already a CM here.")
                 else:
                     client.area.add_owner(c)
                     database.log_area("cm.add", client, client.area, target=c)
@@ -463,7 +465,7 @@ def ooc_cmd_anncase(client, arg):
                     "You should probably announce the case to at least one person."
                 )
             msg = "=== Case Announcement ===\r\n{} [{}] is hosting {}, looking for ".format(
-                client.showname, client.id, args[0]
+                client.char_name, client.id, args[0]
             )
 
             lookingfor = [
@@ -560,10 +562,52 @@ def ooc_cmd_judgelog(client, arg):
         raise ServerError(
             "There have been no judge actions in this area since start of session."
         )
+    
+@mod_only()
+def ooc_cmd_evidlog(client, arg):
+    """
+    List the last 10 edits of evidence in the current area.
+    Usage: /evidlog
+    """
+    if len(arg) != 0:
+        raise ArgumentError("This command does not take any arguments.")
+    elog = client.area.evidlog
+    if len(elog) > 0:
+        elog_msg = "== Evidence Log =="
+        for x in elog:
+            elog_msg += f"\r\n{x}"
+        client.send_ooc(elog_msg)
+    else:
+        raise ServerError(
+            "There have been no evidence actions in this area since start of session."
+        )
 
 
 def ooc_cmd_afk(client, arg):
     client.server.client_manager.toggle_afk(client)
+
+
+def ooc_cmd_format(client, arg):
+    '''
+    Prints the available IC markdown for text formatting, including colors, alignment and actions.
+    Usage: /format <option>
+    '''
+    formats = {
+        "colors": "`Green`, ~Red~, |Orange|, 🤷Gray🤷, _Blue_, ºYellowº, №Pink№, √Cyan√",
+        "align": "~~Center, ~>Right align, \\n New line",
+        "action": "\s Shake, \\f Flash, { Slower text, } Faster text"
+    }
+
+    option = ['colors', 'align', 'action']
+
+    if len(arg) == 0:
+        client.send_ooc(f'All IC formatting options:\n{formats["colors"]}\n {formats["align"]}\n {formats["action"]}')
+    else:
+        choice = arg.lower()
+        if choice in option:
+            client.send_ooc(f'{arg.capitalize()} formatting:\n {formats[choice]}')
+        else:
+            client.send_ooc(f'Formatting options include: {option}')
 
 
 @mod_only(area_owners=True)
@@ -610,7 +654,7 @@ def ooc_cmd_testimony(client, arg):
             idx = int(args[0]) - 1
             client.area.testimony_send(idx)
             client.area.broadcast_ooc(
-                f"{client.showname} has moved to Statement {idx+1}."
+                f"{client.char_name} has moved to Statement {idx+1}."
             )
         except ValueError:
             raise ArgumentError("Index must be a number!")
@@ -682,7 +726,7 @@ def ooc_cmd_testimony_clear(client, arg):
     client.area.testimony.clear()
     client.area.testimony_title = ""
     client.area.broadcast_ooc(
-        f"{client.showname} cleared the current testimony.")
+        f"{client.char_name} cleared the current testimony.")
 
 
 @mod_only(area_owners=True)
@@ -703,7 +747,7 @@ def ooc_cmd_testimony_remove(client, arg):
         if client.area.testimony_index == idx:
             client.area.testimony_index = -1
         client.area.broadcast_ooc(
-            f"{client.showname} has removed Statement {idx+1}.")
+            f"{client.char_name} has removed Statement {idx+1}.")
     except ValueError:
         raise ArgumentError("Index must be a number!")
     except IndexError:
@@ -730,7 +774,7 @@ def ooc_cmd_testimony_amend(client, arg):
         lst[4] = "}}}" + " ".join(args[1:])
         client.area.testimony[idx] = tuple(lst)
         client.area.broadcast_ooc(
-            f"{client.showname} has amended Statement {idx+1}.")
+            f"{client.char_name} has amended Statement {idx+1}.")
     except ValueError:
         raise ArgumentError("Index must be a number!")
     except IndexError:
@@ -759,7 +803,7 @@ def ooc_cmd_testimony_swap(client, arg):
             client.area.testimony[idx2],
         )
         client.area.broadcast_ooc(
-            f"{client.showname} has swapped Statements {idx1+1} and {idx2+1}."
+            f"{client.char_name} has swapped Statements {idx1+1} and {idx2+1}."
         )
     except ValueError:
         raise ArgumentError("Index must be a number!")
@@ -788,7 +832,7 @@ def ooc_cmd_testimony_insert(client, arg):
         client.area.testimony.insert(idx2, statement)
 
         client.area.broadcast_ooc(
-            f"{client.showname} has inserted Statement {idx1+1} into {idx2+1}."
+            f"{client.char_name} has inserted Statement {idx1+1} into {idx2+1}."
         )
     except ValueError:
         raise ArgumentError("Index must be a number!")
