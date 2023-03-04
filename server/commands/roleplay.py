@@ -182,7 +182,7 @@ def ooc_cmd_roll(client, arg):
     roll, num_dice, chosen_max, _modifiers, Sum = rtd(arg)
 
     client.area.broadcast_ooc(
-        f"{client.showname} rolled {roll} out of {chosen_max}."
+        f"{client.char_name} rolled {roll} out of {chosen_max}."
         + (f"\nThe total sum is {Sum}." if num_dice > 1 else "")
     )
     database.log_area(
@@ -206,7 +206,7 @@ def ooc_cmd_rollp(client, arg):
     )
     for c in client.area.owners:
         c.send_ooc(
-            f"[{client.area.id}]{client.showname} secretly rolled {roll} out of {chosen_max}."
+            f"[{client.area.id}]{client.char_name} secretly rolled {roll} out of {chosen_max}."
         )
 
     database.log_area(
@@ -228,7 +228,7 @@ def ooc_cmd_notecard(client, arg):
             client.send_ooc("No notecard found. Usage: /notecard <message>")
         return
     client.area.cards[client.char_name] = arg
-    client.area.broadcast_ooc("{} wrote a note card.".format(client.showname))
+    client.area.broadcast_ooc("{} wrote a note card.".format(client.char_name))
     database.log_area("notecard", client, client.area)
 
 
@@ -240,7 +240,7 @@ def ooc_cmd_notecard_clear(client, arg):
     """
     client.area.cards.clear()
     client.area.broadcast_ooc(
-        f"[{client.id}] {client.showname} has cleared all the note cards in this area."
+        f"[{client.id}] {client.char_name} has cleared all the note cards in this area."
     )
     database.log_area("notecard_clear", client, client.area)
 
@@ -270,7 +270,7 @@ def ooc_cmd_notecard_check(client, arg):
     if len(client.area.cards) == 0:
         raise ClientError("There are no cards to check in this area.")
     client.area.broadcast_ooc(
-        f"[{client.id}] {client.showname} has checked the notecards in this area."
+        f"[{client.id}] {client.char_name} has checked the notecards in this area."
     )
     msg = "Note cards in this area:"
     for card_owner, card_msg in client.area.cards.items():
@@ -298,7 +298,7 @@ def ooc_cmd_vote(client, arg):
         client, TargetType.ID, int(args[0]), False
     )[0]
     client.area.votes.setdefault(target.char_name, []).append(client.char_name)
-    client.area.broadcast_ooc(f"[{client.id}] {client.showname} cast a vote.")
+    client.area.broadcast_ooc(f"[{client.id}] {client.char_name} cast a vote.")
     database.log_area("vote", client, client.area)
 
 
@@ -314,7 +314,7 @@ def ooc_cmd_vote_clear(client, arg):
             if arg in value:
                 value.remove(arg)
                 client.area.broadcast_ooc(
-                    f"[{client.id}] {client.showname} has cleared {arg}'s vote."
+                    f"[{client.id}] {client.char_name} has cleared {arg}'s vote."
                 )
                 return
         raise ClientError(
@@ -322,7 +322,7 @@ def ooc_cmd_vote_clear(client, arg):
         )
     client.area.votes.clear()
     client.area.broadcast_ooc(
-        f"[{client.id}] {client.showname} has cleared all the votes in this area."
+        f"[{client.id}] {client.char_name} has cleared all the votes in this area."
     )
     database.log_area("vote_clear", client, client.area)
 
@@ -380,7 +380,7 @@ def ooc_cmd_vote_check(client, arg):
     if len(client.area.votes) == 0:
         raise ClientError("There are no votes to check in this area.")
     client.area.broadcast_ooc(
-        f"[{client.id}] {client.showname} has checked the votes in this area."
+        f"[{client.id}] {client.char_name} has checked the votes in this area."
     )
     msg = "Votes in this area:"
     msg += get_vote_results(client.area.votes)
@@ -455,7 +455,7 @@ def ooc_cmd_rolla(client, arg):
     roll, max_roll, ability = rolla(ability_dice)
     client.area.broadcast_ooc(
         "{} rolled a {} (out of {}): {}.".format(
-            client.showname, roll, max_roll, ability
+            client.char_name, roll, max_roll, ability
         )
     )
     database.log_area(
@@ -473,7 +473,7 @@ def ooc_cmd_coinflip(client, arg):
     coin = ["heads", "tails"]
     flip = random.choice(coin)
     client.area.broadcast_ooc(
-        "{} flipped a coin and got {}.".format(client.showname, flip)
+        "{} flipped a coin and got {}.".format(client.char_name, flip)
     )
     database.log_area("coinflip", client, client.area, message=flip)
 
@@ -490,7 +490,7 @@ def ooc_cmd_8ball(client, arg):
     rolla_reload(client.area)
     ability_dice = client.area.ability_dice["8ball"]
     client.area.broadcast_ooc(
-        f'{client.showname} asked the 8ball - "{arg}", and it responded: "{rolla(ability_dice)[2]}".'
+        f'{client.char_name} asked the 8ball - "{arg}", and it responded: "{rolla(ability_dice)[2]}".'
     )
 
 

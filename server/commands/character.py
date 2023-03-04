@@ -138,7 +138,7 @@ def ooc_cmd_forcepos(client, arg):
 
     client.area.broadcast_ooc(
         "{} forced {} client(s) into /pos {}.".format(
-            client.showname, len(targets), pos
+            client.char_name, len(targets), pos
         )
     )
 
@@ -171,7 +171,7 @@ def ooc_cmd_charselect(client, arg):
             )
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def force_charselect(client, target, char=""):
     if char != "":
         try:
@@ -322,7 +322,7 @@ def ooc_cmd_reload(client, arg):
     client.send_ooc("Character reloaded.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_blind(client, arg):
     """
     Blind the targeted player(s) from being able to see or talk IC.
@@ -355,7 +355,7 @@ def ooc_cmd_blind(client, arg):
         raise ArgumentError("No targets found.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_unblind(client, arg):
     """
     Undo effects of the /blind command.
@@ -422,7 +422,7 @@ def ooc_cmd_player_move_delay(client, arg):
         raise
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_player_hide(client, arg):
     """
     Hide player(s) from /getarea and playercounts.
@@ -454,16 +454,16 @@ def ooc_cmd_player_hide(client, arg):
         for c in targets:
             if c.hidden:
                 raise ClientError(
-                    f"Client [{c.id}] {c.showname} already hidden!")
+                    f"Client [{c.id}] {c.char_name} already hidden!")
             c.hide(True)
             client.send_ooc(
-                f"You have hidden [{c.id}] {c.showname} from /getarea and playercounts."
+                f"You have hidden [{c.id}] {c.char_name} from /getarea and playercounts."
             )
     else:
         client.send_ooc("No targets found.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_player_unhide(client, arg):
     """
     Unhide player(s) from /getarea and playercounts.
@@ -495,10 +495,10 @@ def ooc_cmd_player_unhide(client, arg):
         for c in targets:
             if not c.hidden:
                 raise ClientError(
-                    f"Client [{c.id}] {c.showname} already revealed!")
+                    f"Client [{c.id}] {c.char_name} already revealed!")
             c.hide(False)
             client.send_ooc(
-                f"You have revealed [{c.id}] {c.showname} for /getarea and playercounts."
+                f"You have revealed [{c.id}] {c.char_name} for /getarea and playercounts."
             )
     else:
         client.send_ooc("No targets found.")
@@ -533,6 +533,8 @@ def ooc_cmd_unhide(client, arg):
     client.area.broadcast_area_list(client)
 
 
+#Sneaking set to True by default because no one cares when you move area
+@mod_only()
 def ooc_cmd_sneak(client, arg):
     """
     Begin sneaking a.k.a. hide your area moving messages from the OOC.
@@ -562,6 +564,7 @@ def ooc_cmd_sneak(client, arg):
                 f"Error encountered: {ex}. Use /sneak [id]")
 
 
+@mod_only()
 def ooc_cmd_unsneak(client, arg):
     """
     Stop sneaking a.k.a. show your area moving messages in the OOC.
@@ -591,12 +594,12 @@ def ooc_cmd_unsneak(client, arg):
                 f"Error encountered: {ex}. Use /unsneak [id]")
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def force_sneak(client, arg):
     arg.sneak(True)
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def force_unsneak(client, arg):
     arg.sneak(False)
 
@@ -635,7 +638,7 @@ def ooc_cmd_unlisten_pos(client, arg):
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_save_character_data(client, arg):
     """
     Save the move_delay, keys, etc. for characters into a file in the storage/character_data/ folder.
@@ -654,7 +657,7 @@ def ooc_cmd_save_character_data(client, arg):
         raise
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_load_character_data(client, arg):
     """
     Load the move_delay, keys, etc. for characters from a file in the storage/character_data/ folder.
@@ -724,7 +727,7 @@ def mod_keys(client, arg, mod=0):
         raise
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_keys_set(client, arg):
     """
     Sets the keys of the target client/character folder/character id to the key(s). Keys must be a number like 5 or a link eg. 1-5.
@@ -736,7 +739,7 @@ def ooc_cmd_keys_set(client, arg):
     mod_keys(client, arg)
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_keys_add(client, arg):
     """
     Adds the keys of the target client/character folder/character id to the key(s). Keys must be a number like 5 or a link eg. 1-5.
@@ -748,7 +751,7 @@ def ooc_cmd_keys_add(client, arg):
     mod_keys(client, arg, 1)
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_keys_remove(client, arg):
     """
     Remvove the keys of the target client/character folder/character id from the key(s). Keys must be a number like 5 or a link eg. 1-5.
@@ -804,7 +807,7 @@ def ooc_cmd_keys(client, arg):
 
 def ooc_cmd_kms(client, arg):
     """
-    Stands for Kick MySelf - Kick other instances of the client opened by you.
+    Stands for Kill MySelf - Kick other instances of the client opened by you.
     Useful if you lose connection and the old client is ghosting.
     Usage: /kms
     """
@@ -859,7 +862,7 @@ def ooc_cmd_chardesc(client, arg):
             if len(arg) > len(desc):
                 desc += f"... Use /chardesc {client.id} to read the rest."
             client.area.broadcast_ooc(
-                f"{client.showname} changed their character description to: {desc}."
+                f"{client.char_name} changed their character description to: {desc}."
             )
         database.log_area("chardesc.change", client, client.area, message=arg)
 
@@ -871,14 +874,14 @@ def ooc_cmd_chardesc_clear(client, arg):
     """
     client.area.area_manager.set_character_data(client.char_id, "desc", "")
     client.area.broadcast_ooc(
-        f"{client.showname} cleared their character description."
+        f"{client.char_name} cleared their character description."
     )
     database.log_area(
         "chardesc.clear", client, client.area
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_chardesc_set(client, arg):
     """
     Set someone else's character description to desc or clear it.
@@ -916,7 +919,7 @@ def ooc_cmd_chardesc_set(client, arg):
         raise ArgumentError("Target not found.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_chardesc_get(client, arg):
     """
     Get someone else's character description.
@@ -1079,7 +1082,7 @@ def ooc_cmd_charlists(client, arg):
     client.send_ooc(text)
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_charlist(client, arg):
     """
     Load a character list. /charlists to see available character lists.

@@ -26,7 +26,7 @@ __all__ = [
     "ooc_cmd_setpw",
 ]
 
-
+@mod_only()
 def ooc_cmd_area_lock(client, arg):
     """
     Prevent users from joining the current area.
@@ -82,7 +82,7 @@ def ooc_cmd_area_lock(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_area_mute(client, arg):
     """
     Makes this area impossible to speak for normal users unlesss /invite is used.
@@ -120,7 +120,7 @@ def ooc_cmd_area_mute(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_area_unmute(client, arg):
     """
     Undo the effects of /area_mute.
@@ -158,6 +158,7 @@ def ooc_cmd_area_unmute(client, arg):
         raise
 
 
+@mod_only()
 def ooc_cmd_area_unlock(client, arg):
     """
     Allow anyone to freely join the current area.
@@ -213,6 +214,7 @@ def ooc_cmd_area_unlock(client, arg):
         raise
 
 
+@mod_only()
 def ooc_cmd_lock(client, arg):
     """
     Context-sensitive function to lock area(s) and/or area link(s).
@@ -238,6 +240,7 @@ def ooc_cmd_lock(client, arg):
         ooc_cmd_link_lock(client, links)
 
 
+@mod_only()
 def ooc_cmd_unlock(client, arg):
     """
     Context-sensitive function to unlock area(s) and/or area link(s).
@@ -456,6 +459,7 @@ def ooc_cmd_oneunlink(client, arg):
         raise
 
 
+@mod_only()
 def ooc_cmd_link_lock(client, arg):
     """
     Lock the path leading to target area(s).
@@ -501,6 +505,7 @@ def ooc_cmd_link_lock(client, arg):
         raise
 
 
+@mod_only()
 def ooc_cmd_link_unlock(client, arg):
     """
     Unlock the path leading to target area(s).
@@ -546,7 +551,7 @@ def ooc_cmd_link_unlock(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_link_hide(client, arg):
     """
     Hide the path leading to target area(s).
@@ -576,7 +581,7 @@ def ooc_cmd_link_hide(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_link_unhide(client, arg):
     """
     Unhide the path leading to target area(s).
@@ -606,7 +611,7 @@ def ooc_cmd_link_unhide(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_link_pos(client, arg):
     """
     Set the link's targeted pos when using it. Leave blank to reset.
@@ -634,7 +639,7 @@ def ooc_cmd_link_pos(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_link_peekable(client, arg):
     """
     Make the path(s) leading to target area(s) /peek-able.
@@ -665,7 +670,7 @@ def ooc_cmd_link_peekable(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_link_unpeekable(client, arg):
     """
     Make the path(s) leading to target area(s) no longer /peek-able.
@@ -697,7 +702,7 @@ def ooc_cmd_link_unpeekable(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_link_evidence(client, arg):
     """
     Make specific link only accessible from evidence ID(s).
@@ -741,7 +746,7 @@ def ooc_cmd_link_evidence(client, arg):
             )
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_unlink_evidence(client, arg):
     """
     Unlink evidence from links.
@@ -826,7 +831,7 @@ def ooc_cmd_pw(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_setpw(client, arg):
     """
     Context-sensitive function to set a password area(s) and/or area link(s).
