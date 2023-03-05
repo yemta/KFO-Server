@@ -105,6 +105,7 @@ class TsuServer3:
             self.load_backgrounds()
             self.load_ipranges()
             self.load_gimps()
+            self.load_prompts()
             self.load_miscdata()
             self.hub_manager = HubManager(self)
         except yaml.YAMLError as exc:
@@ -356,6 +357,10 @@ class TsuServer3:
                 self.gimp_list = yaml.safe_load(gmp)
         except Exception:
             logger.debug("Cannot find gimp list.")
+    
+    def load_prompts(self):
+        with open('config/prompt.yaml', 'r', encoding='utf-8') as pmpt:
+            self.prompts = yaml.safe_load(pmpt)
 
     def load_miscdata(self):
         """Load misc data list for links etc."""
@@ -560,6 +565,7 @@ class TsuServer3:
          - Commands
          - Banlists
          - Gimp list
+         - Prompts
          - Misc Data
         """
         with open("config/config.yaml", "r") as cfg:
@@ -601,6 +607,7 @@ class TsuServer3:
         self.load_backgrounds()
         self.load_ipranges()
         self.load_gimps()
+        self.load_prompts()
         self.load_miscdata()
 
         import server.commands

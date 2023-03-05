@@ -44,6 +44,10 @@ __all__ = [
     "ooc_cmd_minigame_end_song",
     "ooc_cmd_minigame_concede_song",
     "ooc_cmd_subtheme",
+    "ooc_cmd_prompt",
+    "ooc_cmd_case",
+    "ooc_cmd_asspull",
+    "ooc_cmd_keywords",
 ]
 
 
@@ -1047,3 +1051,61 @@ def ooc_cmd_subtheme(client, arg):
     client.send_ooc(
         f"Setting hub subtheme to {arg}."
     )
+
+# Case prompts
+def ooc_cmd_prompt(client, arg):
+    """
+    Generate a random prompt using a keyword.
+    The generated prompt is not publicly broadcasted.
+    Usage: /prompt <keyword>
+    """
+    if len(arg) == 0:
+        raise ArgumentError('You must specify a keyword. Use /prompt <keyword>.')
+    try:
+        prmt_msg = f"You generated the following prompt from {arg}:\n"
+        prmt_msg += client.area.generate_prompt(arg,client.server.prompts)
+        client.send_ooc(prmt_msg)
+    except:
+        raise ArgumentError('unknown error while generating prompt')
+    
+def ooc_cmd_case(client, arg):
+    """
+    Generate a random case premise.
+    The generated case is not publicly broadcasted.
+    Usage: /case
+    """
+    case_prompt = 'murder'
+    if len(arg) != 0:
+        raise ArgumentError('This command does not take any arguments.')
+    case_msg = client.area.generate_prompt(case_prompt,client.server.prompts)
+    client.send_ooc(case_msg)
+
+def ooc_cmd_asspull(client, arg):
+    """
+    Generate a random number of asspulls (default 1, max 5).
+    The generated asspulls is not publicly broadcasted.
+    Usage: /asspull, /asspull <number>
+    """
+    asspull_prompt = 'asspull'
+    if len(arg) == 0:
+        amount = 1
+    else:
+        try:
+            amount = int(arg)
+        except:
+            raise ArgumentError('You must enter a number. Use /asspull <num>')
+    if (amount > 5 or amount < 1) :
+        raise ArgumentError('Number must be between 1 and 5')
+    asspull_msg = client.area.generate_prompt(asspull_prompt,client.server.prompts,0,amount, True)
+    client.send_ooc(asspull_msg)
+
+def ooc_cmd_keywords(client, arg):
+    '''
+    Prints the current keywords in prompt.yaml
+    Usage: /keywords
+    '''
+    if len(arg) != 0:
+        raise ArgumentError('This command does not take any arguments.')
+    key_msg = "These are the current valid keywords: "
+    key_msg += ', '.join(client.server.prompts.keys())
+    client.send_ooc(key_msg)
