@@ -8,6 +8,9 @@ __all__ = [
     "ooc_cmd_bg",
     "ooc_cmd_bgs",
     "ooc_cmd_status",
+    "ooc_cmd_allow_blankposting",
+    "ooc_cmd_allow_showname",
+    "ooc_cmd_allow_iniswap",
     "ooc_cmd_area",
     "ooc_cmd_area_visible",
     "ooc_cmd_autogetarea",
@@ -109,6 +112,48 @@ def ooc_cmd_status(client, arg):
             database.log_area("status", client, client.area, message=arg)
         except AreaError:
             raise
+
+
+@mod_only(area_owners=True)
+def ooc_cmd_allow_blankposting(client, arg):
+    """
+    Toggle whether or not in-character messages purely consisting of spaces are allowed.
+    Usage: /allow_blankposting
+    """
+    client.area.blankposting_allowed = not client.area.blankposting_allowed
+    answer = 'allowed' if client.area.blankposting_allowed else 'forbidden'
+    client.area.broadcast_ooc(
+        '{} [{}] has set blankposting in the area to {}.'.format(
+            client.char_name, client.id, answer))
+    database.log_area('blankposting', client, client.area, message=client.area.blankposting_allowed)
+
+
+@mod_only()
+def ooc_cmd_allow_showname(client, arg):
+    """
+    Toggle whether or not users can use shownames in the current area.
+    Usage: /allow_showname
+    """
+    client.area.showname_changes_allowed = not client.area.showname_changes_allowed
+    answer = 'allowed' if client.area.showname_changes_allowed else 'forbidden'
+    client.area.broadcast_ooc(
+        '{} [{}] has set showname usage in the area to {}.'.format(
+            client.char_name, client.id, answer))
+    database.log_area('shownames', client, client.area, message=client.area.showname_changes_allowed)
+
+
+@mod_only()
+def ooc_cmd_allow_iniswap(client, arg):
+    """
+    Toggle whether or not users are allowed to swap INI files in character
+    folders to allow playing as a character other than the one chosen in
+    the character list.
+    Usage: /allow_iniswap
+    """
+    client.area.iniswap_allowed = not client.area.iniswap_allowed
+    answer = 'allowed' if client.area.iniswap_allowed else 'forbidden'
+    client.send_ooc(f'Iniswap is {answer}.')
+    database.log_area('iniswap', client, client.area, message=client.area.iniswap_allowed)
 
 
 def ooc_cmd_area(client, arg):

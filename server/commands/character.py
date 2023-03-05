@@ -1062,9 +1062,14 @@ def ooc_cmd_showname(client, arg):
         client.send_ooc(
             "Nice try! You may not spoof [M] tag in your showname.")
         return
-    client.used_showname_command = True
-    client.showname = arg
-    client.send_ooc(f"You set your showname to '{client.showname}'.")
+    if client.area.showname_changes_allowed:
+        client.used_showname_command = True
+        client.showname = arg
+        client.send_ooc(f"You set your showname to '{client.showname}'.")
+    else:
+        client.send_ooc(
+                "Showname changes are forbidden in this area!")
+        return
 
 
 def ooc_cmd_charlists(client, arg):

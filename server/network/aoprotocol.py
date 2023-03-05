@@ -598,12 +598,11 @@ class AOProtocol(asyncio.Protocol):
         if (
             len(showname) > 0
             and not self.client.area.showname_changes_allowed
-            and not self.client.is_mod
-            and not (self.client in self.client.area.owners)
         ):
             self.client.send_ooc(
                 "Showname changes are forbidden in this area!")
-            return
+            #return
+            showname = self.client.char_name
         if self.client.area.is_iniswap(self.client, pre, anim, folder, sfx):
             folder = self.client.char_name
             self.client.send_ooc(
@@ -938,7 +937,7 @@ class AOProtocol(asyncio.Protocol):
             except IndexError:
                 evidence = 0
         # Update the showname ref for the client
-        if self.client.used_showname_command:
+        if self.client.used_showname_command and self.client.area.showname_changes_allowed:
             showname = self.client.showname
         self.client.showname = showname
 
@@ -1605,7 +1604,7 @@ class AOProtocol(asyncio.Protocol):
                 )
                 return
             msg = "=== Case Announcement ===\r\n{} [{}] is hosting {}, looking for ".format(
-                self.client.showname, self.client.id, args[0]
+                self.client.char_name, self.client.id, args[0]
             )
 
             lookingfor = [
