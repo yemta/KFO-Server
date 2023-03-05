@@ -1258,9 +1258,7 @@ class ClientManager:
                     if c.hidden_in is not None:
                         name = f":{c.area.evi_list.evidences[c.hidden_in].name}"
                     info += f"📦{name}"
-                if c.is_mod:
-                    info += "[M]"
-                elif c in area.area_manager.owners:
+                if c in area.area_manager.owners:
                     info += "[GM]"
                 elif c in area._owners:
                     info += "[CM]"
@@ -1269,8 +1267,8 @@ class ClientManager:
                     info += f'"{c.showname}" ({c.char_name})'
                 else:
                     info += f"{c.showname}"
-                if c.pos != "":
-                    info += f" <{c.pos}>"
+                #if c.pos != "":
+                #    info += f" <{c.pos}>"
                 if self.is_mod:
                     info += f" ({c.ipid})"
                 if c.name != "" and (self.is_mod or self in area.owners):

@@ -811,8 +811,8 @@ def ooc_cmd_link(client, arg):
         raise ClientError('miscdata.yaml is empty. Tell a mod.')
     
     if len(arg) == 0:
-        msg = 'Links available (use /link <option>):\n'
-        msg += "\n".join(links_list)
+        msg = 'Links available (use /link <option>):\n• '
+        msg += "\n• ".join(links_list)
         client.send_ooc(msg)
     else:
         arg = arg.lower()

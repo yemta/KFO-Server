@@ -451,13 +451,11 @@ class TsuServer3:
         :param as_mod: add moderator prefix (Default value = False)
 
         """
-        if as_mod:
-            as_mod = "[M]"
-        else:
-            as_mod = ""
         ooc_name = (
-            f"<dollar>G[{client.area.area_manager.abbreviation}]|{as_mod}{client.name}"
+            f"<dollar>G[{client.area.abbreviation}][{client.char_name}]"
         )
+        if as_mod:
+            ooc_name += '[M]'
         self.send_all_cmd_pred("CT", ooc_name, msg,
                                pred=lambda x: not x.muted_global)
 

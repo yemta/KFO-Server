@@ -1343,9 +1343,7 @@ class AOProtocol(asyncio.Protocol):
             return
 
         prefix = ""
-        if self.client.is_mod:
-            prefix = "[M]"
-        elif self.client in self.client.area.area_manager.owners:
+        if self.client in self.client.area.area_manager.owners:
             prefix = "[GM]"
         elif self.client in self.client.area._owners:
             name = "[CM]"

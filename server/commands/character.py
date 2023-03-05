@@ -44,6 +44,7 @@ __all__ = [
     "ooc_cmd_blankpost",
     "ooc_cmd_firstperson",
     "ooc_cmd_showname",
+    "ooc_cmd_force_showname",
     "ooc_cmd_charlists",
     "ooc_cmd_charlist",
 ]
@@ -1070,6 +1071,51 @@ def ooc_cmd_showname(client, arg):
         client.send_ooc(
                 "Showname changes are forbidden in this area!")
         return
+
+
+@mod_only()
+def ooc_cmd_force_showname(client, arg):
+    """
+    Set another player's showname similar to the showname box in the client.
+    Note that using this command will override the showname box.
+    Passing no [name] will reset their showname and start using the showname box again.
+    Usage: /force_showname <ID> [name]
+    """
+    args = arg.split()
+
+    if len(args) < 1:
+        raise ArgumentError(
+            'Not enough arguments. Use /force_showname <ID> [name]. Use /getarea for player [ID]s.'
+        )
+
+    if args[0].isdigit():
+        target = client.server.client_manager.get_targets(
+            client, TargetType.ID, int(args[0]), True
+        )
+    else:
+        raise ArgumentError(f"No targets {args[0]} found.")
+
+    if len(args) > 1:
+        fname = args[1]
+        for t in target:
+            try:
+                t.used_showname_command = True
+                t.showname = fname
+                t.send_ooc(f"You showname has been set to '{t.showname}'.")
+                client.send_ooc(f"Forced {t.char_name}'s showname to '{fname}'.")
+                database.log_area("forceshowname", client, client.area,
+                                target=t, message=fname)
+            except ClientError:
+                raise
+    else:
+        for t in target:
+            try:
+                t.used_showname_command = False
+                t.showname = ""
+                t.send_ooc("Your showname is now reset.")
+                client.send_ooc(f"Reset {t.char_name}'s showname.")
+            except ClientError:
+                raise
 
 
 def ooc_cmd_charlists(client, arg):

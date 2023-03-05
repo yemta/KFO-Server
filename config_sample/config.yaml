@@ -110,8 +110,9 @@ bridgebot:
 
 # Whether or not Discord webhooks are enabled, and if they are, the webhook URL to use.
 # If webhooks_enabled is set to false, no webhooks will function regardless of whether they are enabled or not.
-webhooks_enabled: false
+webhooks_enabled: true
 webhook_url: example.com
+advert_url: example.com
 
 # Settings for the modcall webhook. Leaving a setting blank will use its default behavior.
 modcall_webhook:
@@ -135,3 +136,13 @@ unban_webhook:
   enabled: true
   username: Unban
   avatar_url:
+ 
+warn_webhook:
+  enabled: true
+  username: Warn
+  avatar_url:
+  
+advert_webhook:
+  enabled: true
+  username: CASE ADVERT 
+  avatar_url: 
