@@ -1,11 +1,26 @@
 # Links
 links:
-    thread: http://aovidya.pw
-    update: http://aovidya.pw/downloads
+    thread: "http://aovidya.pw"
+    update: "http://aovidya.pw/downloads"
 
-# Titles for advert webhook
-advert_titles:
+# Discord role pings for webhook
+role_pings:
+    def: 
+    pro: 
+    witdet: 
+    jud: 
+    steno: 
+    arcade: 
+
+# Titles for casing advert webhook
+case_advert_titles:
     - A Case Is Being Advertised!
     - Babe wake up new case just dropped.
     - Can't Escape From Casing Fate!
     - Rev up that case document!
+
+# Titles for gaming advert webhook
+game_advert_titles:
+    - A Game Is Being Advertised!
+    - Game Time!
+    - When's Whose Court?

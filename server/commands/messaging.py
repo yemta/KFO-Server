@@ -43,6 +43,7 @@ def ooc_cmd_g(client, arg):
     database.log_area("chat.global", client, client.area, message=arg)
 
 
+@mod_only()
 def ooc_cmd_h(client, arg):
     """
     Broadcast a hub-wide message.
@@ -105,7 +106,6 @@ def ooc_cmd_toggleglobal(client, arg):
     client.send_ooc(f"Global chat turned {glob_stat}.")
 
 
-@mod_only(area_owners=True)
 def ooc_cmd_need(client, arg):
     """
     Broadcast a server-wide advertisement for your role-play or case.
@@ -116,6 +116,7 @@ def ooc_cmd_need(client, arg):
     if len(arg) == 0:
         raise ArgumentError("You must specify what you need.")
     client.server.broadcast_need(client, arg)
+    client.server.webhooks.advert(client.char_name, client.area, msg=arg)
     database.log_area("chat.announce.need", client, client.area, message=arg)
 
 
