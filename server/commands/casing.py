@@ -70,7 +70,7 @@ def ooc_cmd_doc(client, arg):
             raise ClientError("You may not do that while spectating!")
         client.area.change_doc(arg)
         client.area.broadcast_ooc(
-            f"{client.char_name} changed the doc link to: {client.area.doc}"
+            f"{client.char_name} changed the doc link."
         )
         database.log_area("doc.change", client, client.area, message=arg)
 
