@@ -221,11 +221,7 @@ def ooc_cmd_getarea(client, arg):
     aid = client.area.id
     if arg.strip().isnumeric():
         area = client.area.area_manager.get_area_by_id(int(arg))
-        if area.id == client.area.id or (client.is_mod or client in area.owners):
-            aid = int(arg)
-        else:
-            raise ClientError(
-                "Can't see that area - insufficient permissions!")
+        aid = int(arg)
     client.send_area_info(aid)
 
 
@@ -455,6 +451,7 @@ def ooc_cmd_shuffle_pos(client, arg):
     client.area.broadcast_ooc("Position lock cleared.")
 
 
+@mod_only(area_owners=True)
 def ooc_cmd_pos_lock(client, arg):
     """
     Lock current area's available positions into a list of pos separated by space or comma.
@@ -829,7 +826,8 @@ def ooc_cmd_link(client, arg):
                 raise ClientError('Link has not been set!')
         else:
             raise ArgumentError('Link not found. Use /link to see possible choices.')
-        
+
+
 def ooc_cmd_update(client, arg):
     """
     See the link to the latest update.
