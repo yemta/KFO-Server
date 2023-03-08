@@ -367,6 +367,7 @@ def ooc_cmd_mods(client, arg):
         client.send_ooc("There are {} mods online.".format(modcount))
 
 
+@mod_only()
 def ooc_cmd_unmod(client, arg):
     """
     Log out as a moderator.

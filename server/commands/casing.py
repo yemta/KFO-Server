@@ -846,6 +846,7 @@ def ooc_cmd_testimony_insert(client, arg):
         raise
 
 
+@mod_only(area_owners=True)
 def ooc_cmd_cs(client, arg):
     """
     Start a one-on-one "Cross Swords" debate with targeted player!
@@ -914,6 +915,7 @@ def ooc_cmd_cs(client, arg):
             raise ex
 
 
+@mod_only(area_owners=True)
 def ooc_cmd_pta(client, arg):
     """
     Start a one-on-one "Panic Talk Action" debate with targeted player!

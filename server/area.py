@@ -160,9 +160,9 @@ class Area:
         self.use_backgrounds_yaml = False
         self.can_spectate = True
         self.can_getarea = True
-        self.can_cross_swords = False
-        self.can_scrum_debate = False
-        self.can_panic_talk_action = False
+        self.can_cross_swords = True
+        self.can_scrum_debate = True
+        self.can_panic_talk_action = True
         self.force_sneak = False
         # Whether the area is dark or not
         self.dark = False

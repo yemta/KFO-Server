@@ -702,7 +702,7 @@ def ooc_cmd_max_players(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_desc(client, arg):
     """
     Set an area description that appears to the user any time they enter the area.
@@ -799,6 +799,7 @@ def ooc_cmd_lights(client, arg):
             pos = client.area.pos_dark
         c.send_command("BN", bg, pos)
     client.send_ooc(f"This area is {stat} dark.")
+
 
 def ooc_cmd_link(client, arg):
     """
