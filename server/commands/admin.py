@@ -127,7 +127,7 @@ def ooc_cmd_kick(client, arg):
             client.send_ooc(f"{c.showname} was kicked.")
             c.send_command("KK", reason)
             c.disconnect()
-        client.server.webhooks.kick(c.ipid, reason, client, c.char_name)
+        client.server.webhooks.kick(c.ipid, c.hdid, reason, client, c.char_name)
     else:
         client.send_ooc(f"No targets with the IPID {ipid} were found.")
 
@@ -197,6 +197,7 @@ def kickban(client, arg, ban_hdid):
 
     char = None
     hdid = None
+    hdban = False
     if ipid is not None:
         targets = client.server.client_manager.get_targets(
             client, TargetType.IPID, ipid, False
@@ -204,9 +205,11 @@ def kickban(client, arg, ban_hdid):
         if targets:
             for c in targets:
                 if ban_hdid:
+                    hdban = True
                     database.ban(c.hdid, reason,
                                  ban_type="hdid", ban_id=ban_id)
                     hdid = c.hdid
+                hdid = c.hdid
                 c.send_command("KB", reason)
                 c.disconnect()
                 char = c.char_name
@@ -215,7 +218,7 @@ def kickban(client, arg, ban_hdid):
             client.send_ooc(f"{len(targets)} clients were kicked.")
         client.send_ooc(f"{ipid} was banned. Ban ID: {ban_id}")
     client.server.webhooks.ban(
-        ipid, ban_id, reason, client, hdid, char, unban_date)
+        ipid, hdid, ban_id,  hdban, reason, client, char, unban_date)
 
 
 @mod_only()

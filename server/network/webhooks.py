@@ -22,6 +22,7 @@ class Webhooks:
         message=None,
         embed=False,
         title=None,
+        color=None,
         description=None,
         url=None,
     ):
@@ -41,6 +42,7 @@ class Webhooks:
             embed = {}
             embed["description"] = description
             embed["title"] = title
+            embed['color'] = color
             data["embeds"].append(embed)
         result = requests.post(
             url, data=json.dumps(data), headers={"Content-Type": "application/json"}
@@ -65,6 +67,7 @@ class Webhooks:
         mod_role_id = self.server.config["modcall_webhook"]["mod_role_id"]
         mods = len(self.server.client_manager.get_mods())
         current_time = strftime("%H:%M", gmtime())
+        color = self.server.config["modcall_webhook"]["color"]
 
         if not is_enabled:
             return
@@ -86,7 +89,9 @@ class Webhooks:
             message=message,
             embed=True,
             title="Modcall",
+            color=color,
             description=description,
+            url=self.server.config["modcall_url"]
         )
 
     def advert(self, char, area, msg=None):
@@ -131,10 +136,12 @@ class Webhooks:
 
         if caseF:
             titleF = "❗ Case Advert ❗"
+            color = self.server.config["advert_webhook"]["case_color"]
             message = f"{random.choice(case_title_list)}\n"
             message += " ".join(pings)
         else:
             titleF = "❗ Game Advert ❗"
+            color = self.server.config["advert_webhook"]["game_color"]
             message = f"{random.choice(game_title_list)}\n"
             message += " ".join(pings)
 
@@ -146,6 +153,7 @@ class Webhooks:
             message=message,
             embed=True,
             title=titleF,
+            color=color,
             description=description,
             url=self.server.config["advert_url"]
         )
@@ -177,10 +185,11 @@ class Webhooks:
     def ban(
         self,
         ipid,
+        hdid,
         ban_id,
+        hdban,
         reason="",
         client=None,
-        hdid=None,
         char=None,
         unban_date=None,
     ):
@@ -194,7 +203,7 @@ class Webhooks:
         message = f"{char} (IPID: {ipid}, HDID: {hdid})" if char is not None else str(ipid)
         message += (
             f" was hardware-banned"
-            if hdid is not None
+            if hdban
             else " was banned"
         )
         message += (
