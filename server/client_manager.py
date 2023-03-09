@@ -626,7 +626,7 @@ class ClientManager:
                 if self.area.area_manager.replace_music:
                     song_list = self.area.area_manager.music_list
                 else:
-                    song_list = song_list + self.area.area_manager.music_list
+                    song_list = self.area.area_manager.music_list + song_list
 
             # Area music list
             if (
@@ -637,7 +637,7 @@ class ClientManager:
                 if self.area.replace_music:
                     song_list = self.area.music_list
                 else:
-                    song_list = song_list + self.area.music_list
+                    song_list = self.area.music_list + song_list
 
             # Client music list
             if (
@@ -653,7 +653,7 @@ class ClientManager:
                 if self.replace_music:
                     song_list = self.music_list
                 else:
-                    song_list = song_list + self.music_list
+                    song_list = self.music_list + song_list
 
             return song_list
 
