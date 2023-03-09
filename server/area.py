@@ -240,6 +240,7 @@ class Area:
         self.evidlog = []
         self.music = ""
         self.music_player = ""
+        self.musiclog = []
         self.music_player_ipid = -1
         self.music_looping = 0
         self.music_effects = 0
@@ -1694,23 +1695,32 @@ class Area:
             self.evidlog = self.evidlog[1:]
         self.evidlog.append(f"{client.char_name} ({client.ip}) {msg}.")
 
-    def add_music_playing(self, client, name, showname="", autoplay=None):
+    def add_music_playing(self, client, name, autoplay=None):
         """
         Set info about the current track playing.
         :param client: player
-        :param showname: showname of player (can be blank)
         :param name: track name
         :param autoplay: if track will play itself as soon as user joins area
         """
-        if showname != "":
-            self.music_player = f"{showname} ({client.char_name})"
-        else:
-            self.music_player = client.char_name
+        self.music_player = client.char_name
         self.music_player_ipid = client.ipid
         self.music = name
         if autoplay is None:
             autoplay = self.music_autoplay
         self.music_autoplay = autoplay
+
+    def add_to_musiclog(self, client, name):
+        """
+        Append an event to the /play music log (max 5 items).
+        :param client: player
+        :param name: track name
+        """
+        self.music_player = client.char_name
+        self.music = name
+        if len(self.musiclog) >= 5:
+            self.musiclog = self.musiclog[1:]
+        self.musiclog.append(
+            f'{self.music_player} [{client.id}] played {name}.')
 
     def get_evidence_list(self, client):
         """

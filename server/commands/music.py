@@ -9,6 +9,7 @@ from . import mod_only
 __all__ = [
     "ooc_cmd_currentmusic",
     "ooc_cmd_getmusic",
+    "ooc_cmd_musiclog",
     "ooc_cmd_jukebox_toggle",
     "ooc_cmd_jukebox_skip",
     "ooc_cmd_jukebox",
@@ -68,6 +69,25 @@ def ooc_cmd_getmusic(client, arg):
         client.area.music_effects,
     )
     client.send_ooc(f"Playing track '{client.area.music}'.")
+
+
+def ooc_cmd_musiclog(client, arg):
+    """
+    Show the last 5 songs played through the /play command.
+    Usage: /musiclog
+    """
+    if len(arg) != 0:
+        raise ArgumentError('This command has no arguments.')
+    mlog = client.area.musiclog
+    if len(mlog) > 0:
+        mlog_msg = '== Music Log =='
+        for x in mlog:
+            mlog_msg += f'\r\n{x}'
+        client.send_ooc(mlog_msg)
+    else:
+        raise ServerError(
+            'No songs have been /play-ed in this area since start of session.'
+        )
 
 
 @mod_only(area_owners=True)

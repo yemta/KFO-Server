@@ -526,7 +526,8 @@ class ClientManager:
                             return
                         area.play_music(name, self.char_id,
                                         length, showname, effects)
-                        area.add_music_playing(self, name, showname)
+                        area.add_music_playing(self, name)
+                        area.add_to_musiclog(self, name)
                 # We only make one log entry to not CBT the log list. TODO: Broadcast logs
                 database.log_area("music", self, self.area, message=name)
             except ServerError:
