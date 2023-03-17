@@ -1039,7 +1039,7 @@ def ooc_cmd_concede(client, arg):
         client.send_ooc("There is no minigame running right now.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_subtheme(client, arg):
     """
     Change the subtheme for the hub.
