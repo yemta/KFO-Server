@@ -41,8 +41,8 @@ __all__ = [
     "ooc_cmd_chardesc_set",
     "ooc_cmd_chardesc_get",
     "ooc_cmd_narrate",
-    "ooc_cmd_blankpost",
-    "ooc_cmd_firstperson",
+    #"ooc_cmd_blankpost",
+    #"ooc_cmd_firstperson",
     "ooc_cmd_showname",
     "ooc_cmd_force_showname",
     "ooc_cmd_charlists",
@@ -953,7 +953,7 @@ def ooc_cmd_chardesc_get(client, arg):
 
 def ooc_cmd_narrate(client, arg):
     """
-    Speak as a Narrator for your next emote.
+    Speak as a Narrator, talking over the current IC visuals without showing your character.
     If using 2.9.1, when you speak IC only the chat box will be affected, making you "narrate" over the current visuals.
     tog can be `on`, `off` or empty.
     Usage: /narrate [tog]
