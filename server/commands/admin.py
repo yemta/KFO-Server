@@ -132,6 +132,7 @@ def ooc_cmd_kick(client, arg):
         client.send_ooc(f"No targets with the IPID {ipid} were found.")
 
 
+@mod_only()
 def ooc_cmd_ban(client, arg):
     """
     Ban a user. If a ban ID is specified instead of a reason,
@@ -143,6 +144,7 @@ def ooc_cmd_ban(client, arg):
     kickban(client, arg, False)
 
 
+@mod_only()
 def ooc_cmd_banhdid(client, arg):
     """
     Ban both a user's HDID and IPID.
