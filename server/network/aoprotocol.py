@@ -598,12 +598,11 @@ class AOProtocol(asyncio.Protocol):
         if (
             len(showname) > 0
             and not self.client.area.showname_changes_allowed
-            and not self.client.is_mod
-            and not (self.client in self.client.area.owners)
         ):
             self.client.send_ooc(
                 "Showname changes are forbidden in this area!")
-            return
+            #return
+            showname = self.client.char_name
         if self.client.area.is_iniswap(self.client, pre, anim, folder, sfx):
             folder = self.client.char_name
             self.client.send_ooc(
@@ -653,11 +652,6 @@ class AOProtocol(asyncio.Protocol):
                     )
                     return
 
-        if text.replace(" ", "").startswith("(("):
-            self.client.send_ooc(
-                "Please, *please* use the OOC chat instead of polluting IC. Normal OOC is local to area. You can use /h to talk across the hub, or /g to talk across the entire server."
-            )
-            return
         # Scrub text and showname for bad words
         if (
             self.client.area.area_manager.censor_ic
@@ -907,10 +901,16 @@ class AOProtocol(asyncio.Protocol):
             return
 
         msg = dezalgo(text, self.server.zalgo_tolerance)
+        if self.client.gimp:
+            msg = self.client.gimp_message(msg)
         if self.client.shaken:
             msg = self.client.shake_message(msg)
         if self.client.disemvowel:
             msg = self.client.disemvowel_message(msg)
+        if self.client.dank:
+            msg = self.client.dank_message(msg)
+        if self.client.rainbow:
+            msg = self.client.rainbow_message(msg)
         if evidence:
             area = self.client.area
             try:
@@ -937,7 +937,7 @@ class AOProtocol(asyncio.Protocol):
             except IndexError:
                 evidence = 0
         # Update the showname ref for the client
-        if self.client.used_showname_command:
+        if self.client.used_showname_command and self.client.area.showname_changes_allowed:
             showname = self.client.showname
         self.client.showname = showname
 
@@ -1348,9 +1348,7 @@ class AOProtocol(asyncio.Protocol):
             return
 
         prefix = ""
-        if self.client.is_mod:
-            prefix = "[M]"
-        elif self.client in self.client.area.area_manager.owners:
+        if self.client in self.client.area.area_manager.owners:
             prefix = "[GM]"
         elif self.client in self.client.area._owners:
             name = "[CM]"
@@ -1609,7 +1607,7 @@ class AOProtocol(asyncio.Protocol):
                 )
                 return
             msg = "=== Case Announcement ===\r\n{} [{}] is hosting {}, looking for ".format(
-                self.client.showname, self.client.id, args[0]
+                self.client.char_name, self.client.id, args[0]
             )
 
             lookingfor = [
@@ -1689,6 +1687,7 @@ class AOProtocol(asyncio.Protocol):
         self.client.area.evi_list.add_evidence(
             self.client, args[0], args[1], args[2], "all"
         )
+        self.client.area.add_to_evidlog(self.client, 'added evidence')
         database.log_area("evidence.add", self.client, self.client.area)
         self.client.area.broadcast_evidence_list()
 
@@ -1703,6 +1702,7 @@ class AOProtocol(asyncio.Protocol):
         if not self.validate_net_cmd(args, self.ArgType.INT):
             return
         self.client.area.evi_list.del_evidence(self.client, int(args[0]))
+        self.client.area.add_to_evidlog(self.client, 'deleted evidence')
         database.log_area("evidence.del", self.client, self.client.area)
         self.client.area.broadcast_evidence_list()
 
@@ -1728,6 +1728,7 @@ class AOProtocol(asyncio.Protocol):
         evi = (args[1], args[2], args[3], "all")
 
         self.client.area.evi_list.edit_evidence(self.client, int(args[0]), evi)
+        self.client.area.add_to_evidlog(self.client, 'edited evidence')
         database.log_area("evidence.edit", self.client, self.client.area)
         self.client.area.broadcast_evidence_list()
 

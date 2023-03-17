@@ -2,6 +2,7 @@ from time import gmtime, strftime
 
 import requests
 import json
+import random
 
 from server import database
 
@@ -21,6 +22,7 @@ class Webhooks:
         message=None,
         embed=False,
         title=None,
+        color=None,
         description=None,
         url=None,
     ):
@@ -40,6 +42,7 @@ class Webhooks:
             embed = {}
             embed["description"] = description
             embed["title"] = title
+            embed['color'] = color
             data["embeds"].append(embed)
         result = requests.post(
             url, data=json.dumps(data), headers={"Content-Type": "application/json"}
@@ -64,6 +67,7 @@ class Webhooks:
         mod_role_id = self.server.config["modcall_webhook"]["mod_role_id"]
         mods = len(self.server.client_manager.get_mods())
         current_time = strftime("%H:%M", gmtime())
+        color = self.server.config["modcall_webhook"]["color"]
 
         if not is_enabled:
             return
@@ -77,7 +81,7 @@ class Webhooks:
                 s = "s"
             message = f"New modcall received ({mods} moderator{s} online)"
 
-        description = f"[{current_time} UTC] {char} ({ipid}) in hub [{area.area_manager.id}] {area.area_manager.name} [{area.id}] {area.name} {'without reason (using <2.6?)' if reason is None else f'with reason: {reason}'}"
+        description = f"[{current_time} UTC] {char} (IPID: {ipid}) in [{area.id}] {area.name} {'without reason (using <2.6?)' if reason is None else f'with reason: {reason}'}"
 
         self.send_webhook(
             username=username,
@@ -85,10 +89,76 @@ class Webhooks:
             message=message,
             embed=True,
             title="Modcall",
+            color=color,
             description=description,
+            url=self.server.config["modcall_url"]
         )
 
-    def kick(self, ipid, reason="", client=None, char=None):
+    def advert(self, char, area, msg=None):
+        is_enabled = self.server.config["advert_webhook"]["enabled"]
+        username = self.server.config["advert_webhook"]["username"]
+        avatar_url = self.server.config["advert_webhook"]["avatar_url"]
+
+        if not is_enabled:
+            return
+        
+        caseF = True
+        titleF = "Advert Title"
+        case_title_list = self.server.misc_data['case_advert_titles']
+        game_title_list = self.server.misc_data['game_advert_titles']
+        ping_list = self.server.misc_data['role_pings']
+
+        roles = {}
+        for key in ["def", "defense", "co", "sup", "support", "bench"]:
+            roles[key] = ping_list['def']
+        for key in ["pro", "prosecution", "co", "sup", "support", "bench"]:
+            roles[key] = ping_list['pro']
+        for key in ["wit", "witness", "det", "detective"]:
+            roles[key] = ping_list['witdet']
+        for key in ["jud", "judge", "jooj"]:
+            roles[key] = ping_list['jud']
+        for key in ["steno", "stenographer"]:
+            roles[key] = ping_list['steno']
+
+        pings = []
+        check = msg.lower()
+        if "Arcade" in area.name:
+            pings.append(ping_list["arcade"])
+            caseF = False
+        elif "all roles" in check:
+            for x in roles:
+                if x in roles and roles[x] not in pings:
+                    pings.append(roles[x])
+        else:
+            for x in check.split():
+                if x in roles and roles[x] not in pings:
+                    pings.append(roles[x])
+
+        if caseF:
+            titleF = "❗ Case Advert ❗"
+            color = self.server.config["advert_webhook"]["case_color"]
+            message = f"{random.choice(case_title_list)}\n"
+            message += " ".join(pings)
+        else:
+            titleF = "❗ Game Advert ❗"
+            color = self.server.config["advert_webhook"]["game_color"]
+            message = f"{random.choice(game_title_list)}\n"
+            message += " ".join(pings)
+
+        description = f"{char} in **{area.name}** {'needs people for a case!' if msg is None else f'needs {msg}'}"
+
+        self.send_webhook(
+            username=username,
+            avatar_url=avatar_url,
+            message=message,
+            embed=True,
+            title=titleF,
+            color=color,
+            description=description,
+            url=self.server.config["advert_url"]
+        )
+
+    def kick(self, ipid, hdid, reason="", client=None, char=None):
         is_enabled = self.server.config["kick_webhook"]["enabled"]
         username = self.server.config["kick_webhook"]["username"]
         avatar_url = self.server.config["kick_webhook"]["avatar_url"]
@@ -96,7 +166,7 @@ class Webhooks:
         if not is_enabled:
             return
 
-        message = f"{char} ({ipid})" if char is not None else str(ipid)
+        message = f"{char} (IPID: {ipid}, HDID: {hdid})" if char is not None else str(ipid)
         message += " was kicked"
         message += (
             f" by {client.name} ({client.ipid})"
@@ -115,23 +185,25 @@ class Webhooks:
     def ban(
         self,
         ipid,
+        hdid,
         ban_id,
+        hdban,
         reason="",
         client=None,
-        hdid=None,
         char=None,
         unban_date=None,
     ):
         is_enabled = self.server.config["ban_webhook"]["enabled"]
         username = self.server.config["ban_webhook"]["username"]
         avatar_url = self.server.config["ban_webhook"]["avatar_url"]
+        unban_date = strftime("%Y-%m-%d %H:%M:%S %Z")
 
         if not is_enabled:
             return
-        message = f"{char} ({ipid})" if char is not None else str(ipid)
+        message = f"{char} (IPID: {ipid}, HDID: {hdid})" if char is not None else str(ipid)
         message += (
-            f" (hdid: {hdid}) was hardware-banned"
-            if hdid is not None
+            f" was hardware-banned"
+            if hdban
             else " was banned"
         )
         message += (
@@ -140,11 +212,11 @@ class Webhooks:
             else " from the server"
         )
         message += f" with reason: {reason}" if reason.strip() != "" else ""
-        message += f" (Ban ID: {ban_id})."
+        message += f" (Ban ID: {ban_id}).\n"
         message += (
-            f" It will expire {unban_date}"
+            f"It will expire {unban_date}"
             if unban_date is not None
-            else " It is a permanent ban."
+            else "It is a permanent ban."
         )
 
         self.send_webhook(username=username,
@@ -163,6 +235,30 @@ class Webhooks:
             f" by {client.name} ({client.ipid})."
             if client is not None
             else " by the server."
+        )
+
+        self.send_webhook(username=username,
+                          avatar_url=avatar_url, message=message)
+        
+    def warn(self, ipid, hdid, reason="", client=None, char=None):
+        is_enabled = self.server.config["warn_webhook"]["enabled"]
+        username = self.server.config["warn_webhook"]["username"]
+        avatar_url = self.server.config["warn_webhook"]["avatar_url"]
+
+        if not is_enabled:
+            return
+
+        message = f"{char} (IPID: {ipid}, HDID: {hdid})" if char is not None else str(ipid)
+        message += " was warned"
+        message += (
+            f" by {client.name} ({client.ipid})"
+            if client is not None
+            else " from the server"
+        )
+        message += (
+            f" with reason: {reason}"
+            if reason.strip() != ""
+            else " (no reason provided)."
         )
 
         self.send_webhook(username=username,

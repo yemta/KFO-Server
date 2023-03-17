@@ -160,9 +160,9 @@ class Area:
         self.use_backgrounds_yaml = False
         self.can_spectate = True
         self.can_getarea = True
-        self.can_cross_swords = False
-        self.can_scrum_debate = False
-        self.can_panic_talk_action = False
+        self.can_cross_swords = True
+        self.can_scrum_debate = True
+        self.can_panic_talk_action = True
         self.force_sneak = False
         # Whether the area is dark or not
         self.dark = False
@@ -237,8 +237,10 @@ class Area:
         self.music_looper = None
         self.next_message_time = 0
         self.judgelog = []
+        self.evidlog = []
         self.music = ""
         self.music_player = ""
+        self.musiclog = []
         self.music_player_ipid = -1
         self.music_looping = 0
         self.music_effects = 0
@@ -251,6 +253,7 @@ class Area:
         self.cards = dict()
         self.votes = dict()
         self.password = ""
+        self.shadow_status = {}
 
         self.jukebox_votes = []
         self.jukebox_prev_char_id = -1
@@ -951,7 +954,7 @@ class Area:
                 lst[4] = "}}}" + msg[2:]
                 self.testimony[idx] = tuple(lst)
                 self.broadcast_ooc(
-                    f"{client.showname} has amended Statement {idx+1}.")
+                    f"{client.char_name} has amended Statement {idx+1}.")
                 if not self.recording:
                     self.testimony_send(idx)
             except IndexError:
@@ -1169,7 +1172,7 @@ class Area:
             if len(scrunched) > 0 and scrunched.lower() == "end":
                 self.recording = False
                 self.broadcast_ooc(
-                    f"[{client.id}] {client.showname} has ended the testimony."
+                    f"[{client.id}] {client.char_name} has ended the testimony."
                 )
                 self.send_command("RT", "testimony1", 1)
                 return
@@ -1665,7 +1668,7 @@ class Area:
         self.status = value.upper()
         self.area_manager.send_arup_status()
 
-    def change_doc(self, doc="No document."):
+    def change_doc(self, doc="No document. Find a template at https://aovidya.pw/templates"):
         """
         Set the doc link.
         :param doc: doc link (Default value = 'No document.')
@@ -1681,24 +1684,43 @@ class Area:
         if len(self.judgelog) >= 10:
             self.judgelog = self.judgelog[1:]
         self.judgelog.append(f"{client.char_name} ({client.ip}) {msg}.")
+    
+    def add_to_evidlog(self, client, msg):
+        """
+        Append an event to the evidence log (max 10 items).
+        :param client: event origin
+        :param msg: event message
+        """
+        if len(self.evidlog) >= 10:
+            self.evidlog = self.evidlog[1:]
+        self.evidlog.append(f"{client.char_name} ({client.ip}) {msg}.")
 
-    def add_music_playing(self, client, name, showname="", autoplay=None):
+    def add_music_playing(self, client, name, autoplay=None):
         """
         Set info about the current track playing.
         :param client: player
-        :param showname: showname of player (can be blank)
         :param name: track name
         :param autoplay: if track will play itself as soon as user joins area
         """
-        if showname != "":
-            self.music_player = f"{showname} ({client.char_name})"
-        else:
-            self.music_player = client.char_name
+        self.music_player = client.char_name
         self.music_player_ipid = client.ipid
         self.music = name
         if autoplay is None:
             autoplay = self.music_autoplay
         self.music_autoplay = autoplay
+
+    def add_to_musiclog(self, client, name):
+        """
+        Append an event to the /play music log (max 5 items).
+        :param client: player
+        :param name: track name
+        """
+        self.music_player = client.char_name
+        self.music = name
+        if len(self.musiclog) >= 5:
+            self.musiclog = self.musiclog[1:]
+        self.musiclog.append(
+            f'{self.music_player} [{client.id}] played {name}.')
 
     def get_evidence_list(self, client):
         """
@@ -1746,7 +1768,7 @@ class Area:
         self.update_judge_buttons(client)
 
         self.broadcast_ooc(
-            f"{client.showname} [{client.id}] is CM in this area now.")
+            f"{client.char_name} [{client.id}] is CM in this area now.")
 
     def remove_owner(self, client, dc=False):
         """
@@ -1782,7 +1804,7 @@ class Area:
             self.update_judge_buttons(client)
 
         self.broadcast_ooc(
-            f"{client.showname} [{client.id}] is no longer CM in this area."
+            f"{client.char_name} [{client.id}] is no longer CM in this area."
         )
 
     def broadcast_area_list(self, client=None, refresh=False):
@@ -2133,3 +2155,112 @@ class Area:
             self.length = length
             self.chance = 1
             self.showname = showname
+
+
+    def select_prompt(self, items, amount = 1, allowRepeat = False):
+        #if items isn't a list, turn it into a list with the required amount of entries
+        if not isinstance(items,list) :
+            placeHolder = []
+            for x in range(amount) :
+                placeHolder.append(items)
+            items = placeHolder
+        #if length of items is less than the amount required, allowRepeat is forced on
+        if len(items) < amount :
+            allowRepeat = True
+
+        #the part where it actually selects an item. Declares the output as a string
+        output = ''
+        #repeats the process for the amount of times requested
+        for x in range(amount) :
+            #text stores the choice while stuff is applied to it
+            text = random.choice(items)
+            #if this is the first entry, add it as is
+            if x == 0 :
+                output += str(text)
+            #if this is the last entry, preface it with " and " 
+            elif x + 1 == amount :
+                output += ' and ' + str(text)
+            #if it's an entry inbetween, preface it with a comma separator
+            else:
+                output += ', ' + str(text)
+
+            #if allowRepeat is disabled, remove the entry from items for future pulls
+            #particular placement of element in list *shouldn't* matter, but it needs to be fixed if it does
+            if not allowRepeat :
+                items.remove(text)
+
+        return output
+    
+    def generate_prompt(self, keyword, choiceKey, layer = 0, numSelects = 1 , repeat = False):
+        #declare wildcard format string, and any modifiers needed
+        wildCardStart = '?{'
+        wildCardEnd = '}'
+        numMod = '|'
+        repMod = '%'
+        rangeMod = '-'
+        
+        #attempt to load up choices from keyword
+        try :
+            
+            #throws exception if list goes too deep
+            if layer > 5:
+                raise Exception()
+            #load up lists of prompts from keyword into choices
+            choices = choiceKey[keyword].copy()
+
+            #set output prompt to a random selection from choices
+            output = self.select_prompt(choices, numSelects, repeat)
+
+            #run this code as long as a wildcard is found in the output prompt
+            #more specifically, it checks if the starting string exists first
+            #then if the last example of the ending string is after the earliest starting string
+            while (output.find(wildCardStart) > -1) and (output.rfind(wildCardEnd) > output.find(wildCardStart)) :
+                #grabs the wildcard from its formatting
+                wildCard = output[output.find(wildCardStart):output.find(wildCardEnd,
+                                                                        output.find(wildCardStart)) + len(wildCardEnd)]
+                wildCard = wildCard[len(wildCardStart):(0-len(wildCardEnd))]
+                #tells the program to stick to default values
+                useDefSel = True
+                useDefRep = True
+                
+                #if the wildcard contains a modifier for number
+                if numMod in wildCard :
+                    useDefSel = False
+                    #splits the wildcard by the numMod string
+                    sep = wildCard.split(numMod,1)
+                    wildCard = sep[0]
+                    if repMod in sep[1] : #checks for the repeat modifier in the wildcard
+                    #since the repeat option is useless outside of mulitple options,
+                    #it doesn't check unless the number of choices is modified
+                        useDefRep = False
+                        sep = sep[1].split(repMod,1)
+                        select = sep[0]
+                    else:
+                        select = sep[1]
+
+                    if rangeMod in select :
+                        low = int(select.split(rangeMod)[0])
+                        high = int(select.split(rangeMod)[1])
+                        select = random.choice(range(low,high))
+
+                    select = int(select)
+
+                #generates a new prompt using the given keyword by recursively running generate_prompt
+                if (useDefSel and useDefRep) :
+                    newPrompt = self.generate_prompt(wildCard, choiceKey, layer+1)
+                    full = wildCardStart + wildCard + wildCardEnd
+                elif (not useDefSel and useDefRep) :
+                    newPrompt = self.generate_prompt(wildCard, choiceKey, layer+1, select)
+                    full = wildCardStart + wildCard + numMod + sep[1] + wildCardEnd
+                else :
+                    newPrompt = self.generate_prompt(wildCard, choiceKey, layer+1, select, True)
+                    full = wildCardStart + wildCard + numMod + sep[0] + repMod + wildCardEnd
+
+                #replaces a single instance of the wildcard with the new prompt
+                output = str(output).replace(full, newPrompt, 1)
+                
+        #if an error occurs, return the keyword in uppercase
+        except Exception as F:
+            output = str(keyword).upper()
+
+        return output

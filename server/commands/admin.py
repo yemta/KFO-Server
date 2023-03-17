@@ -32,6 +32,8 @@ __all__ = [
     "ooc_cmd_whois",
     "ooc_cmd_restart",
     "ooc_cmd_myid",
+    "ooc_cmd_lastchar",
+    "ooc_cmd_warn",
 ]
 
 
@@ -125,11 +127,12 @@ def ooc_cmd_kick(client, arg):
             client.send_ooc(f"{c.showname} was kicked.")
             c.send_command("KK", reason)
             c.disconnect()
-        client.server.webhooks.kick(c.ipid, reason, client, c.char_name)
+        client.server.webhooks.kick(c.ipid, c.hdid, reason, client, c.char_name)
     else:
         client.send_ooc(f"No targets with the IPID {ipid} were found.")
 
 
+@mod_only()
 def ooc_cmd_ban(client, arg):
     """
     Ban a user. If a ban ID is specified instead of a reason,
@@ -141,6 +144,7 @@ def ooc_cmd_ban(client, arg):
     kickban(client, arg, False)
 
 
+@mod_only()
 def ooc_cmd_banhdid(client, arg):
     """
     Ban both a user's HDID and IPID.
@@ -195,6 +199,7 @@ def kickban(client, arg, ban_hdid):
 
     char = None
     hdid = None
+    hdban = False
     if ipid is not None:
         targets = client.server.client_manager.get_targets(
             client, TargetType.IPID, ipid, False
@@ -202,9 +207,11 @@ def kickban(client, arg, ban_hdid):
         if targets:
             for c in targets:
                 if ban_hdid:
+                    hdban = True
                     database.ban(c.hdid, reason,
                                  ban_type="hdid", ban_id=ban_id)
                     hdid = c.hdid
+                hdid = c.hdid
                 c.send_command("KB", reason)
                 c.disconnect()
                 char = c.char_name
@@ -213,7 +220,7 @@ def kickban(client, arg, ban_hdid):
             client.send_ooc(f"{len(targets)} clients were kicked.")
         client.send_ooc(f"{ipid} was banned. Ban ID: {ban_id}")
     client.server.webhooks.ban(
-        ipid, ban_id, reason, client, hdid, char, unban_date)
+        ipid, hdid, ban_id,  hdban, reason, client, char, unban_date)
 
 
 @mod_only()
@@ -355,9 +362,14 @@ def ooc_cmd_mods(client, arg):
     Show a list of moderators online.
     Usage: /mods
     """
-    client.send_areas_clients(mods=True)
+    if client.is_mod:
+        client.send_areas_clients(mods=True)
+    else:
+        modcount = len([c for c in client.area.clients if c.is_mod])
+        client.send_ooc("There are {} mods online.".format(modcount))
 
 
+@mod_only()
 def ooc_cmd_unmod(client, arg):
     """
     Log out as a moderator.
@@ -543,3 +555,70 @@ def ooc_cmd_myid(client, arg):
     if client.name != "":
         info += f": {client.name}"
     client.send_ooc(info)
+
+
+@mod_only()
+def ooc_cmd_lastchar(client, arg):
+    """
+    Prints the IPID and HDID of the last user on a character in the current area.
+    Usage: /lastchar <character folder>
+    """
+    if len(arg) == 0:
+        raise ArgumentError('You must specify a character name.')
+
+    try:
+        cid = client.area.area_manager.get_char_id_by_name(arg)
+    except ServerError:
+        raise
+    try:
+        ex = client.area.shadow_status[cid]
+    except KeyError:
+        client.send_ooc("Character hasn't been occupied in area since server start.")
+        return
+    client.send_ooc('Last person on {}: IPID: {}, HDID: {}.'.format(arg, ex[0], ex[1]))
+
+
+@mod_only()
+def ooc_cmd_warn(client, arg):
+    """
+    Warn a player via an OOC message and popup.
+    Usage: /warn <ipid> [reason]
+    Special cases:
+    - "*" warns everyone in the current area.
+    """
+    if len(arg) == 0:
+        raise ArgumentError('You must specify a target. Use /warn <ipid> [reason]')
+    elif arg[0] == '*':
+        targets = [c for c in client.area.clients if c != client]
+    else:
+        targets = None
+
+    args = list(arg.split(' '))
+    if targets is None:
+        raw_ipid = args[0]
+        try:
+            ipid = int(raw_ipid)
+        except:
+            raise ClientError(f'{raw_ipid} does not look like a valid IPID.')
+        targets = client.server.client_manager.get_targets(client, TargetType.IPID,
+                                                        ipid, False)
+
+    if targets:
+        reason = ' '.join(args[1:])
+        if reason == '':
+            reason = 'N/A'
+        for c in targets:
+            database.log_misc('warn', client, target=c, data={'reason': reason})
+            client.send_ooc("{} was warned.".format(
+                c.char_name))
+            c.send_ooc("You have received a warning from a moderator.")
+            #Pop up message
+            c.send_command('BB', 'You have been warned by a moderator:\n' + reason)
+            client.server.webhooks.warn(c.ipid, c.hdid, reason, client, c.char_name)
+    else:
+        try:
+            client.send_ooc(
+                f'No targets with the IPID {ipid} were found.')
+        except:
+            client.send_ooc(
+                'No targets to warn!')

@@ -8,6 +8,8 @@ __all__ = [
     "ooc_cmd_g",
     "ooc_cmd_h",
     "ooc_cmd_m",
+    "ooc_cmd_lm",
+    "ooc_cmd_gm",
     "ooc_cmd_announce",
     "ooc_cmd_toggleglobal",
     "ooc_cmd_need",
@@ -39,10 +41,11 @@ def ooc_cmd_g(client, arg):
         raise ClientError("Global chat toggled off.")
     if len(arg) == 0:
         raise ArgumentError("You can't send an empty message.")
-    client.server.broadcast_global(client, arg, client.is_mod)
+    client.server.broadcast_global(client, arg)
     database.log_area("chat.global", client, client.area, message=arg)
 
 
+@mod_only()
 def ooc_cmd_h(client, arg):
     """
     Broadcast a hub-wide message.
@@ -72,6 +75,34 @@ def ooc_cmd_m(client, arg):
         raise ArgumentError("You can't send an empty message.")
     client.server.send_modchat(client, arg)
     database.log_area("chat.mod", client, client.area, message=arg)
+
+
+@mod_only()
+def ooc_cmd_lm(client, arg):
+    """
+    Send a message to everyone in the current area, speaking officially.
+    Usage: /lm <message>
+    """
+    if len(arg) == 0:
+        raise ArgumentError("Can't send an empty message.")
+    client.area.send_command(
+        'CT', '{}[MOD][{}]'.format(client.server.config['hostname'],
+                                   client.char_name), arg)
+    database.log_area('chat.local-mod', client, client.area, message=arg)
+
+
+@mod_only()
+def ooc_cmd_gm(client, arg):
+    """
+    Broadcast a message to all areas, speaking officially.
+    Usage: /gm <message>
+    """
+    if client.muted_global:
+        raise ClientError('You have the global chat muted.')
+    if len(arg) == 0:
+        raise ArgumentError("Can't send an empty message.")
+    client.server.broadcast_global(client, arg, True)
+    database.log_area('chat.global-mod', client, client.area, message=arg)
 
 
 @mod_only()
@@ -105,7 +136,6 @@ def ooc_cmd_toggleglobal(client, arg):
     client.send_ooc(f"Global chat turned {glob_stat}.")
 
 
-@mod_only(area_owners=True)
 def ooc_cmd_need(client, arg):
     """
     Broadcast a server-wide advertisement for your role-play or case.
@@ -116,6 +146,7 @@ def ooc_cmd_need(client, arg):
     if len(arg) == 0:
         raise ArgumentError("You must specify what you need.")
     client.server.broadcast_need(client, arg)
+    client.server.webhooks.advert(client.char_name, client.area, msg=arg)
     database.log_area("chat.announce.need", client, client.area, message=arg)
 
 

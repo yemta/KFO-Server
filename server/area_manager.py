@@ -524,7 +524,7 @@ class AreaManager:
         client.area.broadcast_evidence_list()
 
         self.broadcast_ooc(
-            f"[{client.id}] {client.showname} ({client.name}) is GM in this hub now."
+            f"[{client.id}] {client.char_name} ({client.name}) is GM in this hub now."
         )
         client.hide(True)
 
@@ -547,7 +547,7 @@ class AreaManager:
         client.area.broadcast_evidence_list()
 
         self.broadcast_ooc(
-            f"[{client.id}] {client.showname} ({client.name}) is no longer GM in this hub."
+            f"[{client.id}] {client.char_name} ({client.name}) is no longer GM in this hub."
         )
         client.hide(False)
 
