@@ -858,12 +858,12 @@ def ooc_cmd_chardesc(client, arg):
             raise ArgumentError("Target not found.")
     else:
         client.desc = arg
-        if not client.hidden and not client.sneaking:
+        if not client.hidden:
             desc = arg[:128]
             if len(arg) > len(desc):
                 desc += f"... Use /chardesc {client.id} to read the rest."
-            client.area.broadcast_ooc(
-                f"{client.char_name} changed their character description to: {desc}."
+            client.send_ooc(
+                f"You changed your character description to: {desc}."
             )
         database.log_area("chardesc.change", client, client.area, message=arg)
 
