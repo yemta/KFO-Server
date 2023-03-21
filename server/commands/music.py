@@ -265,18 +265,13 @@ def ooc_cmd_unblockdj(client, arg):
 
 def ooc_cmd_musiclists(client, arg):
     """
-    Displays all the available server music lists or local lists if path provided.
-    Usage: /musiclists [path]
+    Displays all the available server music lists.
+    Usage: /musiclists
     """
     text = "Available musiclists:"
     from os import listdir
 
-    if arg:
-        for F in listdir(f"{arg}"):
-            if F.lower().endswith(".yaml"):
-                text += "\n- {}".format(F[:-5])
-    else:
-        for F in listdir("storage/musiclists/"):
+    for F in listdir("storage/musiclists/"):
             if F.lower().endswith(".yaml"):
                 text += "\n- {}".format(F[:-5])
 
@@ -294,10 +289,6 @@ def ooc_cmd_musiclist(client, arg):
         if arg == "":
             client.clear_music()
             client.send_ooc("Clearing local musiclist.")
-        elif ":" in arg:
-            client.load_music(f"{arg}")
-            client.music_ref = arg
-            client.send_ooc(f"Loading local musiclist {arg}...")
         else:
             client.load_music(f"storage/musiclists/{arg}.yaml")
             client.music_ref = arg
@@ -320,10 +311,6 @@ def ooc_cmd_area_musiclist(client, arg):
         if arg == "":
             client.area.clear_music()
             client.send_ooc("Clearing area musiclist.")
-        elif ":" in arg:
-            client.area.load_music(f"{arg}")
-            client.area.music_ref = arg
-            client.send_ooc(f"Loading area musiclist {arg}...")
         else:
             client.area.load_music(f"storage/musiclists/{arg}.yaml")
             client.area.music_ref = arg
