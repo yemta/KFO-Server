@@ -179,9 +179,30 @@ def ooc_cmd_dank(client, arg):
     Activate or Deactivate dank text.
     Usage: /dank
     """
+    import random
+    targets = [c for c in client.area.clients]
+    ann = "bussin"
+    drip = ["https://cdn.discordapp.com/attachments/657301457086840837/1090753556237266954/Official_Goku_Drip_Theme_-_Ultra_Dripstinct.mp3",
+            "https://cdn.discordapp.com/attachments/657301457086840837/1090760968922992670/Stereo_Sayan_3D.mp3"]
+
+    for c in targets:
+        if c.dank:
+            c.dank = False
+        else:
+            c.dank = True
+
     if client.dank:
-        client.dank = False
-        client.send_ooc("Dank Mode DEACTIVATED.")
+        ann = f"AREA {client.area.id} DRIP STATUS:\nGOATED WITH THE SAUCE"
+        client.area.play_music(random.choice(drip), "0", 0, "Hypebeast Goku", 0)
+        client.send_ooc("Dank Mode ACTIVATED.")
     else:
-        client.dank = True
-        client.send_ooc(f"Dank Mode ACTIVATED.")
+        ann = f"AREA {client.area.id} DRIP STATUS:\nNONE, COMPLETELY DRY"
+        client.area.play_music("[Misc] Record Scratch", "0", 0, "Regular Goku", 0)
+        client.send_ooc(f"Dank Mode DEACTIVATED.")
+
+    client.server.send_all_cmd_pred(
+        "CT",
+        client.server.config["hostname"],
+        f"==== ALERT ====\r\n{ann}\r\n=================",
+        "1",
+    )
