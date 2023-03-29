@@ -945,7 +945,12 @@ class AOProtocol(asyncio.Protocol):
         # Notably, while we only get a charid_pair and an offset, we send back a chair_pair, an emote, a talker offset
         # and an other offset.
 
-        self.client.charid_pair = charid_pair
+        # Only change the charid pair if we're not overriding
+        if not self.client.charid_pair_override:
+            self.client.charid_pair = charid_pair
+            self.client.pair_order = pair_order
+        charid_pair = self.client.charid_pair
+        pair_order = self.client.pair_order
         self.client.offset_pair = offset_pair
         if emote_mod not in (5, 6):
             self.client.last_sprite = anim
@@ -1321,6 +1326,8 @@ class AOProtocol(asyncio.Protocol):
                 "Your message was not sent for safety reasons: you left space before that slash."
             )
             return
+        database.log_area("chat.ooc", self.client,
+                          self.client.area, message=args[1])
         if args[1].startswith("/"):
             spl = args[1][1:].split(" ", 1)
             cmd = spl[0].lower()
@@ -1363,8 +1370,6 @@ class AOProtocol(asyncio.Protocol):
         self.client.area.send_owner_command(
             "CT", f"[{self.client.area.id}]{name}", args[1]
         )
-        database.log_area("chat.ooc", self.client,
-                          self.client.area, message=args[1])
 
     def net_cmd_mc(self, args):
         """Play music.

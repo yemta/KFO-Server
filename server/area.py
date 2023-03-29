@@ -1098,9 +1098,12 @@ class Area:
                             break
                     # Speaker always goes in front
                     charid_pair = f"{charid_pair}^0"
-            # DRO 1.0.0 client compatibility, tell the client we acknowledged their MS packet
-            # TODO: actually only send this if we're on a DRO client
-            client.send_command("ackMS")
+
+            # rainbow text!?!?!?
+            if client.rainbow:
+                msg = client.rainbow_message(msg)
+                color = 4
+
             if (
                 msg.strip() != ""
                 or self.last_ic_message is None
@@ -1306,7 +1309,7 @@ class Area:
         for char in "@$`|_~%\\}{":
             msg = msg.replace(char, "")
         # Very basic approximation of text length
-        delay = len(msg) * 40
+        delay = len(msg) * 40 + 40
         # Minimum area msg delay
         delay = max(self.min_msg_delay, delay)
         # Maximum area msg delay
