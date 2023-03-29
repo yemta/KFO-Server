@@ -174,6 +174,7 @@ def ooc_cmd_rainbow(client, arg):
         client.send_ooc(f"Rainbow Mode ACTIVATED.")
 
 
+@mod_only()
 def ooc_cmd_dank(client, arg):
     """
     Activate or Deactivate dank text.

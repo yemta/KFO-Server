@@ -190,9 +190,6 @@ class ClientManager:
             # The currently playing audio for this client. Keeping track so we don't replay the same audio erroneously
             # (such as in the case of music_autoplay areas)
             self.playing_audio = ["", ""]
-            
-            # rainbowtext hell
-            self.rainbow = False
 
         def send_raw_message(self, msg):
             """
@@ -1766,19 +1763,6 @@ class ClientManager:
                     message = re.sub(x, select[x], message, flags=re.IGNORECASE)
             message = re.sub('[bp]', '\U0001F171', message, flags=re.IGNORECASE)
             return message
-
-        def rainbow_message(self, message):
-            """Turn the message into rainbows (base color assumed to be blue)"""
-            # red orange yellow green cyan blue magenta
-            color_array = ['~', '|', 'º', '`', '√', '', '№']
-            constructed_message = ''
-            # pseudo-randomize the rainbows based on msg length
-            index = len(message) % len(color_array)
-            for symbol in message:
-                symbol = f'{color_array[index]}{symbol}{color_array[index]}'
-                constructed_message += symbol
-                index = (index + 1) % len(color_array)
-            return constructed_message
 
     def __init__(self, server):
         self.clients = set()
