@@ -174,6 +174,25 @@ def ooc_cmd_rainbow(client, arg):
         client.rainbow = True
         client.send_ooc(f"Rainbow Mode ACTIVATED.")
 
+gokudrip = """
+wait#280#%
+BN#OCCourtSky#%
+/play_once https://cdn.discordapp.com/attachments/657301457086840837/1090753556237266954/Official_Goku_Drip_Theme_-_Ultra_Dripstinct.mp3 %
+MS#1#-#Phoenix#confident# #def#1#0#0#0#0#0#0#0#0##-1###0<and>0#0#0#0#0#0#-^(b)confident^(a)confident^#-^(b)confident^(a)confident^#-^(b)confident^(a)confident^#0#dbzteleport||dbz-teleport#%
+wait#2500#%
+BN#OCCourtSky#%
+MS#1#hat#Hershel#hat# #pro#1#0#6#0#0#0#1#0#0##-1###0<and>0#0#0#0#0#0#hat^(b)hat^(a)hat^#hat^(b)hat^(a)hat^#hat^(b)hat^(a)hat^#0#dbzteleport||dbz-teleport#%
+wait#2300#%
+BN#OCCourtSky#%
+MS#1#-#Phoenix_SOJ_Wit#stern# #jud#1#0#0#0#0#0#0#0#0##-1###0<and>0#0#0#0#0#0#-^(b)stern^(a)stern^#-^(b)stern^(a)stern^#-^(b)stern^(a)stern^#0#dbzteleport||dbz-teleport#%
+wait#2300#%
+BN#OCCourtSky#%
+MS#1#mladytipper#Hershel_Pro#mlady# #wit#1#0#6#0#0#0#0#0#0##-1###0<and>0#0#0#0#0#0#mladytipper^(b)mlady^(a)mlady^#mladytipper^(b)mlady^(a)mlady^#mladytipper^(b)mlady^(a)mlady^#0#dbzteleport||dbz-teleport#%
+wait#2500#%
+BN#OCWhiteRoom#%
+MS#0#puzzlewin-layton-pre#Phoenix_PLvsAA#puzzlewin-layton#~~}}}By any means necessary. By any means necessary. By any means necessary. By any means necessary. By any means necessary.#def#1#0#0#1#0#0#0#0#0##-1###0<and>0#0#0#0#0#0#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#0#slash||sfx-slash#%
+"""
+
 def ooc_cmd_emoji(client, arg):
     """
     Activate or Deactivate emoji mode.
@@ -196,7 +215,6 @@ def ooc_cmd_dank(client, arg):
     from server import commands
     targets = [c for c in client.area.clients]
     ann = "bussin"
-    drip = "https://cdn.discordapp.com/attachments/657301457086840837/1090753556237266954/Official_Goku_Drip_Theme_-_Ultra_Dripstinct.mp3"
 
     for c in targets:
         if c.dank:
@@ -206,10 +224,9 @@ def ooc_cmd_dank(client, arg):
 
     if client.dank:
         ann = f"AREA {client.area.id} DRIP STATUS:\nGOATED WITH THE SAUCE"
-        client.area.play_music(drip, "0", 0, "Hypebeast Goku", 0)
         
         client.area.evi_list.add_evidence(client, "Goku's Drip", 
-                                          "MS#chat#-#Hatch#Gunshot##wit#et-gunshot-2#0#29#1#0#0#0#0#0# #-1###0&0#0#0#0#0#0#-^(b)Gunshot^(a)Gunshot^#-^(b)Gunshot^(a)Gunshot^#-^(b)Gunshot^(a)Gunshot^#0#||#%", 
+                                          gokudrip, 
                                           "JFAMoney.png", "all")      
         client.area.broadcast_evidence_list()
         commands.call(client, "demo", "Goku's Drip")
