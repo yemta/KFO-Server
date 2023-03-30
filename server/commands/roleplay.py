@@ -713,7 +713,7 @@ def ooc_cmd_demo(client, arg):
             p_args[0] = p_args[0].strip()
             client.area.demo += [p_args]
     for c in client.area.clients:
-        if c in client.area.owners:
+        if c in client.area.owners or c.is_mod:
             c.send_ooc(
                 f"Starting demo playback using evidence '{evidence.name}'...")
 

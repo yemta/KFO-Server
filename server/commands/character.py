@@ -1154,6 +1154,7 @@ def ooc_cmd_force_showname(client, arg):
     Set another player's showname similar to the showname box in the client.
     Note that using this command will override the showname box.
     Passing no [name] will reset their showname and start using the showname box again.
+    Using "*" for ID will change everyone in the area.
     Usage: /force_showname <ID> [name]
     """
     args = arg.split()
@@ -1167,6 +1168,8 @@ def ooc_cmd_force_showname(client, arg):
         target = client.server.client_manager.get_targets(
             client, TargetType.ID, int(args[0]), True
         )
+    elif args[0] == "*":
+        target = [c for c in client.area.clients]
     else:
         raise ArgumentError(f"No targets {args[0]} found.")
 

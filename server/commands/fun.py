@@ -13,6 +13,7 @@ __all__ = [
     "ooc_cmd_ungimp",
     "ooc_cmd_washhands",
     "ooc_cmd_rainbow",
+    "ooc_cmd_emoji",
     "ooc_cmd_dank",
 ]
 
@@ -173,18 +174,29 @@ def ooc_cmd_rainbow(client, arg):
         client.rainbow = True
         client.send_ooc(f"Rainbow Mode ACTIVATED.")
 
+def ooc_cmd_emoji(client, arg):
+    """
+    Activate or Deactivate emoji mode.
+    Usage: /emoji
+    """
+    if client.dank:
+        client.dank = False
+        client.send_ooc("Emoji Mode DEACTIVATED.")
+    else:
+        client.dank = True
+        client.send_ooc(f"Emoji Mode ACTIVATED.")
 
 @mod_only()
 def ooc_cmd_dank(client, arg):
     """
-    Activate or Deactivate dank text.
+    Activate or Deactivate full dank mode for the area.
+    Warning: this is an absolute God-defying clusterfuck of a mess.
     Usage: /dank
     """
-    import random
+    from server import commands
     targets = [c for c in client.area.clients]
     ann = "bussin"
-    drip = ["https://cdn.discordapp.com/attachments/657301457086840837/1090753556237266954/Official_Goku_Drip_Theme_-_Ultra_Dripstinct.mp3",
-            "https://cdn.discordapp.com/attachments/657301457086840837/1090760968922992670/Stereo_Sayan_3D.mp3"]
+    drip = "https://cdn.discordapp.com/attachments/657301457086840837/1090753556237266954/Official_Goku_Drip_Theme_-_Ultra_Dripstinct.mp3"
 
     for c in targets:
         if c.dank:
@@ -194,11 +206,26 @@ def ooc_cmd_dank(client, arg):
 
     if client.dank:
         ann = f"AREA {client.area.id} DRIP STATUS:\nGOATED WITH THE SAUCE"
-        client.area.play_music(random.choice(drip), "0", 0, "Hypebeast Goku", 0)
+        client.area.play_music(drip, "0", 0, "Hypebeast Goku", 0)
+        
+        client.area.evi_list.add_evidence(client, "Goku's Drip", 
+                                          "MS#chat#-#Hatch#Gunshot##wit#et-gunshot-2#0#29#1#0#0#0#0#0# #-1###0&0#0#0#0#0#0#-^(b)Gunshot^(a)Gunshot^#-^(b)Gunshot^(a)Gunshot^#-^(b)Gunshot^(a)Gunshot^#0#||#%", 
+                                          "JFAMoney.png", "all")      
+        client.area.broadcast_evidence_list()
+        commands.call(client, "demo", "Goku's Drip")
+        c.used_showname_command = True
+        c.showname = f"HYPEBEAST-{c.char_name.upper()}"
+        
         client.send_ooc("Dank Mode ACTIVATED.")
     else:
         ann = f"AREA {client.area.id} DRIP STATUS:\nNONE, COMPLETELY DRY"
         client.area.play_music("[Misc] Record Scratch", "0", 0, "Regular Goku", 0)
+
+        commands.call(client, "evidence_remove", "Goku's Drip")
+        client.area.broadcast_evidence_list()
+        c.used_showname_command = False
+        c.showname = ""
+        
         client.send_ooc(f"Dank Mode DEACTIVATED.")
 
     client.server.send_all_cmd_pred(

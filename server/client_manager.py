@@ -1740,6 +1740,7 @@ class ClientManager:
                       "america": "🧒🔫",
                       "usa": "✈️🏢🏢",
                       "europe": "🏳️‍🌈⚣",
+                      "europoor": "🌈⚣",
                       "alpaca": "🦙💨", 
                       "blood": "🩸🩸",
                       "mod": "💩",
@@ -1753,15 +1754,19 @@ class ClientManager:
                       "steno": "📝😫",
                       "suspect": "sussy ඞඞඞ",
                       "lmao": "😂😂",
-                      "nigg": "🏀🧑🏿"
+                      "nigg": "🏀🧑🏿",
+                      "haha": "😂😂",
+                      "rat": "🐀",
+                      "birthday": "🎂"
                       } 
 
             parts = message.lower()
             for x in select:
                 if x in parts:
-                    #message = message.replace(x, select[x])
                     message = re.sub(x, select[x], message, flags=re.IGNORECASE)
             message = re.sub('[bp]', '\U0001F171', message, flags=re.IGNORECASE)
+            message = message.replace("?", "❓")
+            message = message.replace("!", "❗")
             return message
 
     def __init__(self, server):

@@ -2071,11 +2071,6 @@ class Area:
         if len(self.demo) <= 0:
             self.stop_demo()
             return
-        if not (client in self.owners):
-            client.send_ooc(
-                f"[Demo] Playback stopped due to you having insufficient permissions! (Not CM/GM anymore)")
-            self.stop_demo()
-            return
 
         packet = self.demo.pop(0)
         header = packet[0]
