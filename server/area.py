@@ -167,7 +167,7 @@ class Area:
         # Whether the area is dark or not
         self.dark = False
         # The background to set when area's lights are turned off
-        self.background_dark = "fxdarkness"
+        self.background_dark = "Blackout"
         # The pos to set when the area's lights are turned off
         self.pos_dark = "wit"
         # The desc to set when the area's lights are turned off

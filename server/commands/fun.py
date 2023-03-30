@@ -226,7 +226,11 @@ def ooc_cmd_dank(client, arg):
             c.dank = True
 
     if client.dank:
-        ann = f"AREA {client.area.id} DRIP STATUS:\nGOATED WITH THE SAUCE"     
+        ann = f"AREA {client.area.id} DRIP STATUS:\nGOATED WITH THE SAUCE"
+        client.area.name = "HYPERBOLIC SWAG CHAMBER"[:64]
+        client.area.status = "DRIPPED OUT OF THEIR MINDS\n"
+        client.area.background = "OCCourtInverted"
+        client.area.area_manager.broadcast_area_list(refresh=True)  
         client.area.evi_list.add_evidence(client, "Goku's Drip", 
                                           gokudrip, 
                                           "JFAMoney.png", "all")      
@@ -237,7 +241,11 @@ def ooc_cmd_dank(client, arg):
         client.send_ooc("Dank Mode ACTIVATED.")
     else:
         ann = f"AREA {client.area.id} DRIP STATUS:\nNONE, COMPLETELY DRY"
-        client.area.play_music("[Misc] Record Scratch", "0", 0, "Regular Goku", 0)
+        client.area.name = client.area.o_name
+        client.area.status = "IDLE"
+        client.area.background = client.area.o_background
+        client.area.area_manager.broadcast_area_list(refresh=True)
+        client.area.play_music("[Misc] Record Scratch", "0", 0, "Reality", 0)
         commands.call(client, "evidence_remove", "Goku's Drip")
         client.area.broadcast_evidence_list()
         client.area.stop_demo()
