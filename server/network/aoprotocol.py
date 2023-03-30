@@ -907,8 +907,8 @@ class AOProtocol(asyncio.Protocol):
             msg = self.client.shake_message(msg)
         if self.client.disemvowel:
             msg = self.client.disemvowel_message(msg)
-        if self.client.dank:
-            msg = self.client.dank_message(msg)
+        if self.client.emoji:
+            msg = self.client.emoji_message(msg)
         if self.client.rainbow:
             msg = self.client.rainbow_message(msg)
         if evidence:

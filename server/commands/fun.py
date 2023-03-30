@@ -178,19 +178,19 @@ gokudrip = """
 wait#280#%
 BN#OCCourtSky#%
 /play_once https://cdn.discordapp.com/attachments/657301457086840837/1090753556237266954/Official_Goku_Drip_Theme_-_Ultra_Dripstinct.mp3 %
-MS#1#-#Phoenix#confident# #def#1#0#0#0#0#0#0#0#0##-1###0<and>0#0#0#0#0#0#-^(b)confident^(a)confident^#-^(b)confident^(a)confident^#-^(b)confident^(a)confident^#0#dbzteleport||dbz-teleport#%
+MS#1#-#Phoenix#confident# #def#1#0#0#0#0#0#0#0#0#Phoenix#-1###0<and>0#0#0#0#0#0#-^(b)confident^(a)confident^#-^(b)confident^(a)confident^#-^(b)confident^(a)confident^#0#dbzteleport||dbz-teleport#%
 wait#2500#%
 BN#OCCourtSky#%
-MS#1#hat#Hershel#hat# #pro#1#0#6#0#0#0#1#0#0##-1###0<and>0#0#0#0#0#0#hat^(b)hat^(a)hat^#hat^(b)hat^(a)hat^#hat^(b)hat^(a)hat^#0#dbzteleport||dbz-teleport#%
+MS#1#hat#Hershel#hat# #pro#1#0#6#0#0#0#1#0#0#Layton#-1###0<and>0#0#0#0#0#0#hat^(b)hat^(a)hat^#hat^(b)hat^(a)hat^#hat^(b)hat^(a)hat^#0#dbzteleport||dbz-teleport#%
 wait#2300#%
 BN#OCCourtSky#%
-MS#1#-#Phoenix_SOJ_Wit#stern# #jud#1#0#0#0#0#0#0#0#0##-1###0<and>0#0#0#0#0#0#-^(b)stern^(a)stern^#-^(b)stern^(a)stern^#-^(b)stern^(a)stern^#0#dbzteleport||dbz-teleport#%
+MS#1#-#Phoenix_SOJ_Wit#stern# #jud#1#0#0#0#0#0#0#0#0#Phoenix?#-1###0<and>0#0#0#0#0#0#-^(b)stern^(a)stern^#-^(b)stern^(a)stern^#-^(b)stern^(a)stern^#0#dbzteleport||dbz-teleport#%
 wait#2300#%
 BN#OCCourtSky#%
-MS#1#mladytipper#Hershel_Pro#mlady# #wit#1#0#6#0#0#0#0#0#0##-1###0<and>0#0#0#0#0#0#mladytipper^(b)mlady^(a)mlady^#mladytipper^(b)mlady^(a)mlady^#mladytipper^(b)mlady^(a)mlady^#0#dbzteleport||dbz-teleport#%
+MS#1#mladytipper#Hershel_Pro#mlady# #wit#1#0#6#0#0#0#0#0#0#Layton?#-1###0<and>0#0#0#0#0#0#mladytipper^(b)mlady^(a)mlady^#mladytipper^(b)mlady^(a)mlady^#mladytipper^(b)mlady^(a)mlady^#0#dbzteleport||dbz-teleport#%
 wait#2500#%
 BN#OCWhiteRoom#%
-MS#0#puzzlewin-layton-pre#Phoenix_PLvsAA#puzzlewin-layton#~~}}}By any means necessary. By any means necessary. By any means necessary. By any means necessary. By any means necessary.#def#1#0#0#1#0#0#0#0#0##-1###0<and>0#0#0#0#0#0#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#0#slash||sfx-slash#%
+MS#0#puzzlewin-layton-pre#Phoenix_PLvsAA#puzzlewin-layton#~~}}}By any means necessary. By any means necessary. By any means necessary. By any means necessary. By any means necessary.#def#1#0#0#1#0#0#0#0#0#HYPEBEAST PHOENIX AND LAYTON#-1###0<and>0#0#0#0#0#0#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#puzzlewin-layton-pre^(b)puzzlewin-layton^(a)puzzlewin-layton^#0#slash||sfx-slash#%
 """
 
 def ooc_cmd_emoji(client, arg):
@@ -198,11 +198,11 @@ def ooc_cmd_emoji(client, arg):
     Activate or Deactivate emoji mode.
     Usage: /emoji
     """
-    if client.dank:
-        client.dank = False
+    if client.emoji:
+        client.emoji = False
         client.send_ooc("Emoji Mode DEACTIVATED.")
     else:
-        client.dank = True
+        client.emoji = True
         client.send_ooc(f"Emoji Mode ACTIVATED.")
 
 @mod_only()
@@ -217,32 +217,32 @@ def ooc_cmd_dank(client, arg):
     ann = "bussin"
 
     for c in targets:
+        if not c.emoji:
+            client.emoji = True
         if c.dank:
             c.dank = False
+            c.emoji = False
         else:
             c.dank = True
 
     if client.dank:
-        ann = f"AREA {client.area.id} DRIP STATUS:\nGOATED WITH THE SAUCE"
-        
+        ann = f"AREA {client.area.id} DRIP STATUS:\nGOATED WITH THE SAUCE"     
         client.area.evi_list.add_evidence(client, "Goku's Drip", 
                                           gokudrip, 
                                           "JFAMoney.png", "all")      
         client.area.broadcast_evidence_list()
         commands.call(client, "demo", "Goku's Drip")
         c.used_showname_command = True
-        c.showname = f"HYPEBEAST-{c.char_name.upper()}"
-        
+        c.showname = f"HYPEBEAST-{c.char_name.upper()}"      
         client.send_ooc("Dank Mode ACTIVATED.")
     else:
         ann = f"AREA {client.area.id} DRIP STATUS:\nNONE, COMPLETELY DRY"
         client.area.play_music("[Misc] Record Scratch", "0", 0, "Regular Goku", 0)
-
         commands.call(client, "evidence_remove", "Goku's Drip")
         client.area.broadcast_evidence_list()
+        client.area.stop_demo()
         c.used_showname_command = False
-        c.showname = ""
-        
+        c.showname = ""    
         client.send_ooc(f"Dank Mode DEACTIVATED.")
 
     client.server.send_all_cmd_pred(

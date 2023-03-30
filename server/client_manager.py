@@ -61,6 +61,7 @@ class ClientManager:
             self.shaken = False
             self.gimp = False
             self.rainbow = False
+            self.emoji = False
             self.dank = False
             self.charcurse = []
             self.muted_global = False
@@ -1704,8 +1705,8 @@ class ClientManager:
             parts = list(message)
             return ''.join(random.choice(colors)+'{}'.format(x) for x in parts)
 
-        def dank_message(self, message):
-            """Dank a message."""
+        def emoji_message(self, message):
+            """Emojify a message."""
             import random
             defense = ["🤡", "🛡️", "🎪"]
             prosecution = ["🧱", "⚔️", "🔯"]
