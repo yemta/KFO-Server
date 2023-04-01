@@ -218,7 +218,7 @@ def ooc_cmd_dank(client, arg):
 
     for c in targets:
         if not c.emoji:
-            client.emoji = True
+            c.emoji = True
         if c.dank:
             c.dank = False
             c.emoji = False
@@ -227,30 +227,32 @@ def ooc_cmd_dank(client, arg):
 
     if client.dank:
         ann = f"AREA {client.area.id} DRIP STATUS:\nGOATED WITH THE SAUCE"
-        client.area.name = "HYPERBOLIC SWAG CHAMBER"[:64]
+        client.area.name = "HYPERBOLIC SWAG CHAMBER"
         client.area.status = "DRIPPED OUT OF THEIR MINDS\n"
         client.area.background = "OCCourtInverted"
-        client.area.area_manager.broadcast_area_list(refresh=True)  
+        client.area.area_manager.broadcast_area_list()
         client.area.evi_list.add_evidence(client, "Goku's Drip", 
                                           gokudrip, 
                                           "JFAMoney.png", "all")      
         client.area.broadcast_evidence_list()
         commands.call(client, "demo", "Goku's Drip")
-        c.used_showname_command = True
-        c.showname = f"HYPEBEAST-{c.char_name.upper()}"      
+        for c in targets:
+            c.used_showname_command = True
+            c.showname = f"HYPEBEAST-{c.char_name.upper()}"      
         client.send_ooc("Dank Mode ACTIVATED.")
     else:
         ann = f"AREA {client.area.id} DRIP STATUS:\nNONE, COMPLETELY DRY"
         client.area.name = client.area.o_name
         client.area.status = "IDLE"
         client.area.background = client.area.o_background
-        client.area.area_manager.broadcast_area_list(refresh=True)
+        client.area.area_manager.broadcast_area_list()
         client.area.play_music("[Misc] Record Scratch", "0", 0, "Reality", 0)
         commands.call(client, "evidence_remove", "Goku's Drip")
         client.area.broadcast_evidence_list()
         client.area.stop_demo()
-        c.used_showname_command = False
-        c.showname = ""    
+        for c in targets:
+            c.used_showname_command = False
+            c.showname = ""     
         client.send_ooc(f"Dank Mode DEACTIVATED.")
 
     client.server.send_all_cmd_pred(

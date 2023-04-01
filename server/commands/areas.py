@@ -83,7 +83,7 @@ def ooc_cmd_bgs(client, arg):
 def ooc_cmd_status(client, arg):
     """
     Show or modify the current status of an area.
-    Usage: /status <idle|rp|casing|looking-for-players|lfp|recess|gaming>
+    Usage: /status <idle|rp|casing|looking-for-players|lfp|recess|gaming|standby|building>
     """
     if not client.area.area_manager.arup_enabled:
         raise AreaError("This hub does not use the /status system.")

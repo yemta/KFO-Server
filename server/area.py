@@ -157,7 +157,7 @@ class Area:
         self.can_wtce = True
         self.music_autoplay = False
         self.can_change_status = True
-        self.use_backgrounds_yaml = False
+        self.use_backgrounds_yaml = True
         self.can_spectate = True
         self.can_getarea = True
         self.can_cross_swords = True
@@ -1043,7 +1043,7 @@ class Area:
             # If we're on blue team
             elif client.char_id in client.area.blue_team:
                 # Set our color to blue
-                color = 4
+                color = 7
                 # Offset them to the right
                 offset_pair = 25
                 # Offset them to the left
@@ -1627,14 +1627,16 @@ class Area:
         :raises: AreaError if `bg` is not in background list
         """
         if self.use_backgrounds_yaml:
-            if len(self.server.backgrounds) <= 0:
-                raise AreaError(
-                    'backgrounds.yaml failed to initialize! Please set "use_backgrounds_yaml" to "false" in the config/config.yaml, or create a new "backgrounds.yaml" list in the "config/" folder.'
-                )
-            if bg.lower() not in (name.lower() for name in self.server.backgrounds):
-                raise AreaError(
-                    f'Invalid background name {bg}.\nPlease add it to the "backgrounds.yaml" or change the background name for area [{self.id}] {self.name}.'
-                )
+            for client in self.clients:
+                if not client.is_mod and client not in self.owners:
+                    if len(self.server.backgrounds) <= 0:
+                        raise AreaError(
+                            'backgrounds.yaml failed to initialize!'
+                        )
+                    if bg.lower() not in (name.lower() for name in self.server.backgrounds):
+                        raise AreaError(
+                            f'Invalid background name {bg}.'
+                        )
         if self.dark:
             self.background_dark = bg
         else:
@@ -1661,6 +1663,8 @@ class Area:
             "lfp",
             "recess",
             "gaming",
+            "standby",
+            "building",
         )
         if value.lower() not in allowed_values:
             raise AreaError(
