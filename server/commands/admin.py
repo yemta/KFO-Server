@@ -34,6 +34,7 @@ __all__ = [
     "ooc_cmd_myid",
     "ooc_cmd_lastchar",
     "ooc_cmd_warn",
+    "ooc_cmd_webhook",
 ]
 
 
@@ -622,3 +623,16 @@ def ooc_cmd_warn(client, arg):
         except:
             client.send_ooc(
                 'No targets to warn!')
+
+@mod_only()
+def ooc_cmd_webhook(client, arg):
+    """
+    Toggle advert webhooks on/off if necessary.
+    Usage: /webhook
+    """
+    if client.server.advert_webhook == True:
+        client.server.advert_webhook = False
+    else:
+        client.server.advert_webhook = True
+    
+    client.send_ooc(f"Advert webhooks set to {client.server.advert_webhook}.")

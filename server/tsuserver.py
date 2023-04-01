@@ -64,6 +64,7 @@ class TsuServer3:
         self.ipRange_bans = []
         self.geoIpReader = None
         self.useGeoIp = False
+        self.advert_webhook = True
         self.supported_features = [
             "yellowtext",
             "customobjections",
