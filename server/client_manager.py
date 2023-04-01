@@ -262,7 +262,7 @@ class ClientManager:
             """Send the message of the day to the client."""
             motd = self.server.config["motd"]
             if motd != "":
-                self.send_ooc(f"MOTD\r\n{motd}\r\n")
+                self.send_ooc(f"===MOTD===\r\n{motd}\r\n")
 
         def send_hub_info(self):
             """Send the hub info to the client."""
