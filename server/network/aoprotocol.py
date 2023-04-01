@@ -916,8 +916,6 @@ class AOProtocol(asyncio.Protocol):
             try:
                 evidence = self.client.evi_list[evidence]
                 evi = area.evi_list.evidences[evidence - 1]
-                self.client.area.broadcast_ooc(
-                    f"[{self.client.id}] {self.client.showname} has presented evidence: {evi.name}.")
 
                 if evi.hiding_client is not None:
                     c = evi.hiding_client
