@@ -1042,117 +1042,6 @@ class ClientManager:
                         c.unfollow()
                         return
 
-            reason = ""
-            if (
-                not self.area.dark
-                and not self.area.force_sneak
-                and not self.sneaking
-                and not self.hidden
-            ):
-                if not old_area.dark and not old_area.force_sneak:
-                    if old_area.area_manager == self.area.area_manager:
-                        if self.area.area_manager.passing_msg is True:
-                            old_area.send_ic(
-                                msg=f'~~{"}}}"}[º{self.showname}º leaves to º{area.name}º.]',
-                                emote_mod=1,
-                            )
-                        for c in old_area.clients:
-                            # Check if the GMs should really see this msg
-                            if c in old_area.owners and c.remote_listen in [2, 3]:
-                                continue
-                            c.send_command(
-                                "CT",
-                                self.server.config["hostname"],
-                                f"[{self.id}] {self.showname} leaves to [{self.area.id}] {self.area.name}.",
-                                "1",
-                            )
-                    else:
-                        old_area.send_command(
-                            "CT",
-                            self.server.config["hostname"],
-                            f"[{self.id}] {self.showname} leaves to Hub [{self.area.area_manager.id}] {self.area.area_manager.name}.",
-                            "1",
-                        )
-                        old_area.send_owner_command(
-                            "CT",
-                            self.server.config["hostname"],
-                            f"[{self.id}] {self.showname} leaves to Hub [{self.area.area_manager.id}] {self.area.area_manager.name}",
-                            "1",
-                        )
-
-                desc = "."
-                if self.desc != "":
-                    desc = ": " + self.desc
-                    # Find the first sentence (assuming it ends in a period).
-                    if desc.find(".") != -1:
-                        desc = " " + self.desc[: desc.find(".") + 1]
-                    # Limit that to 64 chars
-                    desc = desc[:64]
-                    if len(self.desc) > 64:
-                        desc += f"... Use /chardesc {self.id} to read the rest."
-                if old_area.area_manager == self.area.area_manager:
-                    self.area.send_command(
-                        "CT",
-                        self.server.config["hostname"],
-                        f"[{self.id}] {self.showname} enters from [{old_area.id}] {old_area.name}{desc}",
-                        "1",
-                    )
-                    if self.area.area_manager.passing_msg is True:
-                        self.area.send_ic(
-                            msg=f'~~{"}}}"}[º{self.showname}º enters from º{old_area.name}º.]',
-                            emote_mod=1,
-                        )
-                else:
-                    self.area.send_command(
-                        "CT",
-                        self.server.config["hostname"],
-                        f"[{self.id}] {self.showname} enters from Hub [{old_area.area_manager.id}] {old_area.area_manager.name}{desc}",
-                        "1",
-                    )
-                    self.area.send_owner_command(
-                        "CT",
-                        self.server.config["hostname"],
-                        f"[{self.id}] {self.showname} enters from Hub [{old_area.area_manager.id}] {old_area.area_manager.name}",
-                        "1",
-                    )
-            else:
-                if self.sneaking:
-                    reason = " (sneaking)"
-                if self.hidden:
-                    reason = " (hidden)"
-                if self.area.force_sneak:
-                    reason = " (new area forces sneaking)"
-                if self.area.dark:
-                    reason = " (new area is dark)"
-                for c in self.area.owners:
-                    if c == self:
-                        continue
-                    if old_area.area_manager == self.area.area_manager:
-                        if c in self.area.clients:
-                            c.send_ooc(
-                                f"[{self.id}] {self.showname} enters unannounced from [{old_area.id}] {old_area.name}{reason}"
-                            )
-                    else:
-                        c.send_ooc(
-                            f"[{self.id}] {self.showname} enters unannounced from Hub [{old_area.area_manager.id}] {old_area.area_manager.name}{reason}"
-                        )
-
-                if old_area.area_manager != self.area.area_manager:
-                    for c in old_area.owners:
-                        if c == self:
-                            continue
-                        c.send_ooc(
-                            f"[{self.id}] {self.showname} leaves unannounced to Hub [{self.area.area_manager.id}] {self.area.area_manager.name}{reason}"
-                        )
-
-            if old_area.area_manager == self.area.area_manager:
-                self.area.send_owner_command(
-                    "CT",
-                    self.server.config["hostname"],
-                    f"[{self.id}] {self.showname} moves from [{old_area.id}] {old_area.name} to [{self.area.id}] {self.area.name}.{reason}",
-                    "1",
-                )
-
             if self.area.cannot_ic_interact(self):
                 self.send_ooc(
                     "This area is muted - you cannot talk in-character unless invited."
@@ -1322,7 +1211,7 @@ class ClientManager:
                 #    info += f" <{c.pos}>"
                 if self.is_mod:
                     info += f" ({c.ipid})"
-                if c.name != "" and (self.is_mod or self in area.owners):
+                if c.name != "" and (self.is_mod):
                     info += f": {c.name}"
             return info
 
