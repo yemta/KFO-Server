@@ -14,7 +14,7 @@ __all__ = [
     "ooc_cmd_jukebox_skip",
     "ooc_cmd_jukebox",
     "ooc_cmd_play",
-    "ooc_cmd_play_once",
+    "ooc_cmd_play1",
     "ooc_cmd_blockdj",
     "ooc_cmd_unblockdj",
     "ooc_cmd_musiclists",
@@ -205,7 +205,7 @@ def ooc_cmd_play(client, arg):
 
 
 @mod_only(area_owners=True)
-def ooc_cmd_play_once(client, arg):
+def ooc_cmd_play1(client, arg):
     """
     Play a track without looping it. See /play for this command with looping.
     Usage: /play_once <name>

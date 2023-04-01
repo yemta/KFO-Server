@@ -95,6 +95,7 @@ class Webhooks:
         )
 
     def advert(self, char, area, msg=None):
+        import re
         is_enabled = self.server.config["advert_webhook"]["enabled"]
         username = self.server.config["advert_webhook"]["username"]
         avatar_url = self.server.config["advert_webhook"]["avatar_url"]
@@ -109,11 +110,14 @@ class Webhooks:
         ping_list = self.server.misc_data['role_pings']
 
         roles = {}
-        for key in ["def", "defense", "co", "sup", "support", "bench"]:
+        for key in ["bench", "benches"]:
+            list = ping_list['def'], ping_list['pro']
+            roles[key] = " ".join(map(str, list))
+        for key in ["def", "defense"]:
             roles[key] = ping_list['def']
-        for key in ["pro", "prosecution", "co", "sup", "support", "bench"]:
+        for key in ["pro", "prosecution"]:
             roles[key] = ping_list['pro']
-        for key in ["wit", "witness", "det", "detective"]:
+        for key in ["wit", "witness", "witnesses", "det", "detective", "jury", "juror", "jurors"]:
             roles[key] = ping_list['witdet']
         for key in ["jud", "judge", "jooj"]:
             roles[key] = ping_list['jud']
@@ -122,6 +126,7 @@ class Webhooks:
 
         pings = []
         check = msg.lower()
+        recheck = re.split('\W+', check)
         if "Arcade" in area.name:
             pings.append(ping_list["arcade"])
             caseF = False
@@ -130,7 +135,7 @@ class Webhooks:
                 if x in roles and roles[x] not in pings:
                     pings.append(roles[x])
         else:
-            for x in check.split():
+            for x in recheck:
                 if x in roles and roles[x] not in pings:
                     pings.append(roles[x])
 
