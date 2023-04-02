@@ -344,7 +344,7 @@ def ooc_cmd_cm(client, arg):
     Leave id blank to promote yourself if there are no CMs.
     Usage: /cm <id>
     """
-    if not client.is_mod and client not in client.area.area_manager.owners and not client.area.can_cm:
+    if not client.is_mod and client not in client.area.owners and not client.area.can_cm:
         raise ClientError("You can't become a CM in this Area!")
     if len(client.area._owners) == 0 or client.is_mod or client in client.area.owners:
         # Client is trying to make someone else a CM
