@@ -20,6 +20,7 @@ __all__ = [
     "ooc_cmd_evidence_swap",  # Not strictly casing - to be reorganized
     "ooc_cmd_cm",
     "ooc_cmd_uncm",
+    "ooc_cmd_clear_cm",
     "ooc_cmd_setcase",
     "ooc_cmd_anncase",
     "ooc_cmd_blockwtce",
@@ -418,6 +419,18 @@ def ooc_cmd_uncm(client, arg):
         except (ClientError, ArgumentError):
             raise
 
+@mod_only()
+def ooc_cmd_clear_cm(client, arg):
+    """
+    Removes all case managers from the current area.
+    Usage: /clear_cm
+    """
+    targets = [c for c in client.area.clients]
+    for c in targets:
+        if c in client.area._owners:
+            client.area.remove_owner(c)
+    client.area.broadcast_ooc("Area CMs cleared.")
+    database.log_area('cm.clear', client, client.area, target=client)
 
 # LEGACY
 def ooc_cmd_setcase(client, arg):
