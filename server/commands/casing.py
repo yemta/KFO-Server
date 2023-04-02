@@ -296,19 +296,19 @@ def ooc_cmd_evidence_mod(client, arg):
     """
     Change the evidence privilege mode. Refer to the documentation
     for more information on the function of each mode.
-    Usage: /evidence_mod <FFA|Mods|CM|HiddenCM>
+    Usage: /evidence_mod <FFA|Mods|CM|HiddenCM|CT>
     """
     if not arg or arg == client.area.evidence_mod:
         client.send_ooc(f"current evidence mod: {client.area.evidence_mod}")
-    elif arg in ["FFA", "Mods", "CM", "HiddenCM"]:
+    elif arg in ["FFA", "Mods", "CM", "HiddenCM", "CT"]:
         if not client.is_mod:
             if client.area.evidence_mod == "Mods":
                 raise ClientError(
                     "You must be authorized to change this area's evidence mod from Mod-only."
                 )
-            if arg == "Mods":
+            if arg == "Mods" or arg == "CT":
                 raise ClientError(
-                    "You must be authorized to set the area's evidence to Mod-only."
+                    "You must be authorized to set the area's evidence to Mod-only or CT."
                 )
         client.area.evidence_mod = arg
         client.area.broadcast_evidence_list()
@@ -316,7 +316,7 @@ def ooc_cmd_evidence_mod(client, arg):
         database.log_area("evidence_mod", client, client.area, message=arg)
     else:
         raise ArgumentError(
-            "Wrong Argument. Use /evidence_mod <MOD>. Possible values: FFA, CM, Mods, HiddenCM"
+            "Wrong Argument. Use /evidence_mod <MOD>. Possible values: FFA, CM, Mods, HiddenCM, CT"
         )
 
 
@@ -868,6 +868,8 @@ def ooc_cmd_cs(client, arg):
     with you joining the side *against* the <id>.
     Usage: /cs <id>
     """
+    if not client.area.evidence_mod == "CT":
+        raise AreaError("Cross Swords can only be activated in CT Evidence Mod.")
     if arg == "":
         if (
             client.area.minigame_schedule
@@ -936,6 +938,8 @@ def ooc_cmd_pta(client, arg):
     Expires in 5 minutes.
     Usage: /pta <id>
     """
+    if not client.area.evidence_mod == "CT":
+        raise AreaError("Panic Talk Action can only be activated in CT Evidence Mod.")
     args = arg.split()
     ooc_cmd_cs(client, f"{args[0]} 1")
 
