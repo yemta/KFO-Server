@@ -1770,11 +1770,10 @@ class AOProtocol(asyncio.Protocol):
         else:
             self.server.send_all_cmd_pred(
                 "ZZ",
-                "[{} UTC] {} ({}) in hub {} [{}]{} with reason: {}".format(
+                "[{} UTC] {} ({}) in [{}]{} with reason: {}".format(
                     current_time,
                     self.client.char_name,
                     self.client.ip,
-                    self.client.area.area_manager.name,
                     self.client.area.abbreviation,
                     self.client.area.name,
                     args[0][:100],

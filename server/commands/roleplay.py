@@ -294,9 +294,12 @@ def ooc_cmd_vote(client, arg):
         raise ArgumentError(
             "You already cast your vote! Wait on the CM to /vote_clear."
         )
-    target = client.server.client_manager.get_targets(
-        client, TargetType.ID, int(args[0]), False
-    )[0]
+    try:
+        target = client.server.client_manager.get_targets(
+            client, TargetType.ID, int(args[0]), False
+        )[0]
+    except:
+        raise ArgumentError("Please provide a client ID. Usage: /vote <id>")
     client.area.votes.setdefault(target.char_name, []).append(client.char_name)
     client.area.broadcast_ooc(f"[{client.id}] {client.char_name} cast a vote.")
     database.log_area("vote", client, client.area)
