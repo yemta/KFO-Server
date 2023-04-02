@@ -14,7 +14,6 @@ __all__ = [
     "ooc_cmd_washhands",
     "ooc_cmd_rainbow",
     "ooc_cmd_emoji",
-    "ooc_cmd_dank",
 ]
 
 
