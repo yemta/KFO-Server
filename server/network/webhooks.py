@@ -59,7 +59,7 @@ class Webhooks:
                 ),
             )
 
-    def modcall(self, char, ipid, area, reason=None):
+    def modcall(self, id, char, ipid, area, reason=None):
         is_enabled = self.server.config["modcall_webhook"]["enabled"]
         username = self.server.config["modcall_webhook"]["username"]
         avatar_url = self.server.config["modcall_webhook"]["avatar_url"]
@@ -81,7 +81,7 @@ class Webhooks:
                 s = "s"
             message = f"New modcall received ({mods} moderator{s} online)"
 
-        description = f"[{current_time} UTC] {char} (IPID: {ipid}) in [{area.id}] {area.name} {'without reason (using <2.6?)' if reason is None else f'with reason: {reason}'}"
+        description = f"[{current_time} UTC] [{id}] {char} (IPID: {ipid}) in [{area.id}] {area.name} {'without reason (using <2.6?)' if reason is None else f'with reason: {reason}'}"
 
         self.send_webhook(
             username=username,

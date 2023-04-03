@@ -1752,7 +1752,7 @@ class AOProtocol(asyncio.Protocol):
         if len(args) < 1:
             self.server.send_all_cmd_pred(
                 "ZZ",
-                "[{} UTC] {} ({}) in hub {} [{}]{} without reason (not using 2.6?)".format(
+                "[{} UTC] {} ({}) in [{}]{} without reason (not using 2.6?)".format(
                     current_time,
                     self.client.char_name,
                     self.client.ip,
@@ -1770,8 +1770,9 @@ class AOProtocol(asyncio.Protocol):
         else:
             self.server.send_all_cmd_pred(
                 "ZZ",
-                "[{} UTC] {} ({}) in [{}]{} with reason: {}".format(
+                "[{} UTC] [{}] {} ({}) in [{}]{} with reason: {}".format(
                     current_time,
+                    self.client.id,
                     self.client.char_name,
                     self.client.ip,
                     self.client.area.abbreviation,
@@ -1784,6 +1785,7 @@ class AOProtocol(asyncio.Protocol):
             database.log_area("modcall", self.client,
                               self.client.area, message=args[0])
             self.server.webhooks.modcall(
+                id=self.client.id,
                 char=self.client.char_name,
                 ipid=self.client.ip,
                 area=self.client.area,
