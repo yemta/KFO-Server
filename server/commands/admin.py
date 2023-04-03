@@ -206,6 +206,7 @@ def kickban(client, arg, ban_hdid):
     char = None
     hdid = None
     hdban = False
+    length = args[2]
     if ipid is not None:
         targets = client.server.client_manager.get_targets(
             client, TargetType.IPID, ipid, False
@@ -226,7 +227,7 @@ def kickban(client, arg, ban_hdid):
             client.send_ooc(f"{len(targets)} clients were kicked.")
         client.send_ooc(f"{ipid} was banned. Ban ID: {ban_id}")
     client.server.webhooks.ban(
-        ipid, hdid, ban_id,  hdban, reason, client, char, unban_date)
+        ipid, hdid, ban_id,  hdban, reason, length, client, char, unban_date)
 
 
 @mod_only()

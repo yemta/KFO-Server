@@ -194,6 +194,7 @@ class Webhooks:
         ban_id,
         hdban,
         reason="",
+        length="",
         client=None,
         char=None,
         unban_date=None,
@@ -201,7 +202,7 @@ class Webhooks:
         is_enabled = self.server.config["ban_webhook"]["enabled"]
         username = self.server.config["ban_webhook"]["username"]
         avatar_url = self.server.config["ban_webhook"]["avatar_url"]
-        unban_date = strftime("%Y-%m-%d %H:%M:%S %Z")
+        unban_date = unban_date.strftime("%Y-%m-%d %H:%M:%S %Z")
 
         if not is_enabled:
             return
@@ -211,6 +212,7 @@ class Webhooks:
             if hdban
             else " was banned"
         )
+        message += f" for {length}"
         message += (
             f" by {client.name} ({client.ipid})"
             if client is not None
