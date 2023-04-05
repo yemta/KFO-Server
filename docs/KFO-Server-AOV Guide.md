@@ -11,13 +11,13 @@ Note that several of these features may require CM.
 * **Various Emoji Removal**
 	- For some other reason, base KFO-Server has emojis in almost every command. We've deleted most of these.
 * **Hub System Disabled**
-	- The concept of having multiple hubs containing multiple areas. Completely uneccessary and generally turned off, so don't worry about it.
+	- The concept of having multiple hubs containing multiple areas. Completely unnecessary and generally turned off, so don't worry about it.
 * **DJ and Looping Music**
 	- DJ is dead. `/play` now loops by default. Use `/play1` if you want to play a song only once.
 
 # New Server Features
 ## Minigames
-**Note**: These can only be activated if the area's evidence_mod is set to "CT" as they are otherwise disruptive. Ask a mod for help.
+**Note: These can only be activated if the area's evidence_mod is set to "CT" as they are otherwise disruptive. Ask a mod for help.**
 * **cs** `<id>`
     - Start a one-on-one "Cross Swords" debate with targeted player!
 	- Will automatically pair you with the target
