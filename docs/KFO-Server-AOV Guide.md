@@ -32,13 +32,13 @@ Note that several of these features may require CM.
 ## Demo / Cutscenes
 * **/demo [evidence id]** 
 	- "Cutscenes" can effectively be created and played using demo files and evidence.
-	- The easiest way to do this is to turn Demo File Logging on in your client's Settings - Logging options.
-	- Then, on server, play out your cutscene using your preferred characters. This will create a demo file in your client's "Logs" folder.
+	- The easiest way to do this is to turn 'Log To Demo Files' on in your client's Settings > Logging options.
+	- Then, on server, play out your cutscene using your preferred characters. A date and time-stamped demo file is created in your client's "Logs" folder in a folder named after the server once you connect.
 	- Open the demo file in a text editor such as Notepad++. From here you can scroll down to see the individual lines relating to each action you performed.
 	- These lines basically consist of client commands involving talking IC, animations, backgrounds and effects. You can manipulate these as needed.
 	- Copy and paste these lines into the Description of a piece of evidence. Note the following:
-	- If playing music, any line starting with "MC#" must be replaced with /play to play music instead. Other commands can be used as well.
-	- You must use `%` to end a line. You can also chain to another demo evidence by putting `/demo [next evidence id]` as the last line.
+		- If playing music, any line starting with "MC#" must be replaced with `/play` to play music instead. Other commands can be used as well.
+		- You must use `%` to end a line. You can also chain to another demo evidence by putting `/demo [next evidence id]` as the last line.
 	- When finished, use `/demo [evidence name or ID]` to play the cutscene. Use `/demo` by itself to stop it.
 ## Case Advert Webhook
 * **/need**
@@ -79,7 +79,7 @@ Note that several of these features may require CM.
     - `[id(s)]` stand for Client ID's that can be viewed using `/getarea`, so `/w 1 msg` to send message "msg" to client with ID 1. The client must be present in the same area. If multiple ID's, they must be comma-separated, like so: `/aw 1,2,3,4 msg` - send message "msg" to Client ID's 1, 2, 3 and 4.
 * **Testimony**
     - Begin with a title, like `--title--`, `==title==`, etc.
-    - When a CM pressed the "Witness Testimony" button, any message spoken from this point on will be recorded.
+    - When a CM presses the "Witness Testimony" button, any message spoken from this point on will be recorded.
         - If anyone that isn't a CM tries to do this, it will not start recording. Use the OOC `/testimony` commands detailed above instead.
     - Once everyone has testified, last one to testify or the CM has to say a single word - `end` to finish recording.
     - Afterwards, next time the CM uses "Cross-Examination" button, the testimony title will be replayed, and the defense can use `>` to progress a statement, `<` to precede a statement, `>5` to go to specific statement 5.
