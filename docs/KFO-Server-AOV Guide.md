@@ -15,8 +15,8 @@ Note that several of these features may require CM.
 * **DJ and Looping Music**
 	- DJ is dead. `/play` now loops by default. Use `/play1` if you want to play a song only once.
 
-## New Server Features
-# Minigames
+# New Server Features
+## Minigames
 **Note**: These can only be activated if the area's evidence_mod is set to "CT" as they are otherwise disruptive. Ask a mod for help.
 * **cs** `<id>`
     - Start a one-on-one "Cross Swords" debate with targeted player!
@@ -29,7 +29,7 @@ Note that several of these features may require CM.
     - Expires in 5 minutes.
 * **concede** `<id>`
     - Concede a trial minigame and withdraw from either team you're part of.
-# Demo / Cutscenes
+## Demo / Cutscenes
 * **/demo [evidence id]** 
 	- "Cutscenes" can effectively be created and played using demo files and evidence.
 	- The easiest way to do this is to turn Demo File Logging on in your client's Settings - Logging options.
@@ -40,14 +40,14 @@ Note that several of these features may require CM.
 	- If playing music, any line starting with "MC#" must be replaced with /play to play music instead. Other commands can be used as well.
 	- You must use `%` to end a line. You can also chain to another demo evidence by putting `/demo [next evidence id]` as the last line.
 	- When finished, use `/demo [evidence name or ID]` to play the cutscene. Use `/demo` by itself to stop it.
-# Case Advert Webhook
+## Case Advert Webhook
 * **/need**
 	- Sending an advert through `/need` will automatically post it to the AOV Community Server's #Case-Advertising channel.
 	- This will also include your current area as well as pinging any roles mentioned in the advert.
 	- eg. "/need defense, co-pro, and steno for case!" will ping the discord's Defense, Prosecution and Steno roles.
 	- Putting "All roles" in the message will ping all roles.
 	- 'Arcade' will be pinged automatically if a `/need` is sent from an Arcade-named area.
-# Testimony Commands
+## Testimony Commands
 **Note: Testimony recording can also be used from IC Chat as a CM - see "In-Character Commands" below.**
 * **testimony** `[id]`
     - Display the currently recorded testimony, including statement IDs.
