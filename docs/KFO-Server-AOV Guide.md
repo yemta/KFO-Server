@@ -1,10 +1,18 @@
 # KFO-Server-AOV
 **Attorney Online Vidya’s** server code has been updated from _tsuserver3_ to _KFO-Server_, the new standard for python based Attorney Online servers.
-While most features remain the same between code bases, there are several changes and new features that we have documented below to help you use them,
-as well as general differences between KFO-Server base and our own server.
-Note that several of these features may require CM.
+While most features remain the same between code bases, there are several changes and new features that we have documented below to help you use them, as well as general differences between KFO-Server base and our own server.
+<br>**Note that several of these features may require CM.**
+
+If you encounter any issues or bugs, please contact AOV staff via server Mod Call.
 
 ## General AOV Changes From KFO-Base / tsuserver3
+* **Minigames and Cutscenes**
+	- The main new features of KFO-Server, as highlighted and documented below.
+	- Minigames replicate mechanics from Danganronpa games, but can likely be used in another context.
+	- Cutscenes (or "Demos") can now be created and played on server. See below for more instructions.
+* **Other Functionality and Improvements**
+	- Various other new or improved commands are listed below. For a full command list, check [here](https://github.com/AttorneyOnlineVidya/KFO-Server-AOV/blob/master/docs/commands.md)
+		- Note that not all commands in the above link will be available on AOV, either because they're redundant or just fucking worthless.
 * **Sneaking / Movement Announcements Removal**
 	- For some reason, base KFO-Server _really_ wants everyone else to know when you change areas and announce as such in OOC. 
 	- We've deleted this because no one gives a fuck when you move area and it clogs up OOC.
@@ -14,6 +22,11 @@ Note that several of these features may require CM.
 	- The concept of having multiple hubs containing multiple areas. Completely unnecessary and generally turned off, so don't worry about it.
 * **DJ and Looping Music**
 	- DJ is dead. `/play` now loops by default. Use `/play1` if you want to play a song only once.
+* **Discord Webhooks**
+	- Case Adverts and Mod Calls are now simultaneously posted to relevant channels in AOV Discords.
+		- For Case Adverts, check [below](https://github.com/AttorneyOnlineVidya/KFO-Server-AOV/blob/master/docs/KFO-Server-AOV%20Guide.md#case-advert-webhook) for usage information. 
+		- If no Mods are online, the Mod Call webhook will alert them and a mod will log in ASAP.
+			- Obviously, abuse of these will get your ass banned.
 
 # New Server Features
 ## Minigames
@@ -30,7 +43,7 @@ Note that several of these features may require CM.
 * **concede** `<id>`
     - Concede a trial minigame and withdraw from either team you're part of.
 ## Demo / Cutscenes
-* **/demo [evidence id]** 
+* **demo [evidence id]** 
 	- "Cutscenes" can effectively be created and played using demo files and evidence.
 	- The easiest way to do this is to turn 'Log To Demo Files' on in your client's Settings > Logging options.
 	- Then, on server, play out your cutscene using your preferred characters. A date and time-stamped demo file is created in your client's "Logs" folder in a folder named after the server once you connect.
@@ -41,7 +54,7 @@ Note that several of these features may require CM.
 		- You must use `%` to end a line. You can also chain to another demo evidence by putting `/demo [next evidence id]` as the last line.
 	- When finished, use `/demo [evidence name or ID]` to play the cutscene. Use `/demo` by itself to stop it.
 ## Case Advert Webhook
-* **/need**
+* **need**
 	- Sending an advert through `/need` will automatically post it to the AOV Community Server's #Case-Advertising channel.
 	- This will also include your current area as well as pinging any roles mentioned in the advert.
 	- eg. "/need defense, co-pro, and steno for case!" will ping the discord's Defense, Prosecution and Steno roles.
@@ -66,7 +79,7 @@ Note that several of these features may require CM.
     - Swap the two statements by id.
 * **testimony\_insert** `<id>` `<id>`
     - Insert the targeted statement at idx.
-## In-Character Commands
+## In-Character Chat Commands
 * **/a** `[id(s)]` `[msg]`
     - Put this in the In-Character chat. Use to message other areas you are a CM in.
     - This command can only be used by CMs and above.
