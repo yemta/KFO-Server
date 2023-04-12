@@ -279,7 +279,7 @@ class ClientManager:
             """
             players = self.server.player_count
             limit = self.server.config["playerlimit"]
-            self.send_ooc(f"👥{players}/{limit} players online.")
+            self.send_ooc(f"{players}/{limit} players online.")
 
         def is_valid_name(self, name):
             """

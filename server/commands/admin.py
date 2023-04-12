@@ -372,7 +372,7 @@ def ooc_cmd_mods(client, arg):
     if client.is_mod:
         client.send_areas_clients(mods=True)
     else:
-        modcount = len([c for c in client.area.clients if c.is_mod])
+        modcount = len(client.server.client_manager.get_mods())
         client.send_ooc("There are {} mods online.".format(modcount))
 
 
