@@ -224,7 +224,6 @@ class Area:
         self.minigame_schedule = None
         # /end
 
-        self.old_muted = False
         self.old_invite_list = set()
 
         # original states for resetting the area after all CMs leave in a single area CM hub
@@ -1865,7 +1864,6 @@ class Area:
         if self.minigame_schedule:
             self.minigame_schedule.cancel()
 
-        self.muted = self.old_muted
         self.invite_list = self.old_invite_list
         self.red_team.clear()
         self.blue_team.clear()
@@ -1993,9 +1991,7 @@ class Area:
                 raise AreaError(
                     "You cannot initiate a minigame against yourself!")
             self.old_invite_list = self.invite_list
-            self.old_muted = self.muted
 
-            self.muted = True
             self.invite_list.clear()
             self.invite_list.add(client.id)
             self.invite_list.add(target.id)
