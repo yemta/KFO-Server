@@ -1597,6 +1597,8 @@ class ClientManager:
         def emoji_message(self, message):
             """Emojify a message."""
             import random
+            meme = ['😂', '🙏', '👏', '🙌🏻', '🤪', '😱', '💯', '😭']
+            rm = random.choice(meme)
             defense = ["🤡", "🛡️", "🎪"]
             prosecution = ["🧱", "⚔️", "🔯"]
             okay = ["👌", "👌🏿", "🆗"]
@@ -1677,6 +1679,7 @@ class ClientManager:
             message = re.sub('[bp]', '\U0001F171', message, flags=re.IGNORECASE)
             message = message.replace("?", "❓")
             message = message.replace("!", "❗")
+            message += " " + rm + rm + rm
             return message
 
     def __init__(self, server):
