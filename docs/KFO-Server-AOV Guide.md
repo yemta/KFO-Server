@@ -3,7 +3,7 @@
 While most features remain the same between code bases, there are several changes and new features that we have documented below to help you use them, as well as general differences between KFO-Server base and our own server.
 <br>**Note that several of these features may require CM.**
 
-If you encounter any issues or bugs, please contact AOV staff via server Mod Call.
+If you encounter any issues or bugs, please contact AOV staff via server Mod Call or our Discord.
 
 ## General AOV Changes From KFO-Base / tsuserver3
 * **Minigames and Cutscenes**
@@ -33,17 +33,17 @@ If you encounter any issues or bugs, please contact AOV staff via server Mod Cal
 **Note: These can only be activated if the area's evidence_mod is set to "CT" as they are otherwise disruptive. Ask a mod for help.**
 * **cs** `<id>`
     - Start a one-on-one "Cross Swords" debate with targeted player!
-	- Will automatically pair you with the target
-    - Expires in 5 minutes.
+    - Will automatically pair you with the target
+    - Starts an area timer for 5 minutes.
     - If there's an ongoing cross-swords already, it will turn into a Scrum Debate (team vs team debate) with you joining the side *against* the `<id>`.
 * **pta** `<id>`
     - Start a one-on-one "Panic Talk Action" debate with targeted player!
-    - Unlike `/cs`, a Panic Talk Action (PTA) cannot evolve into a Scrum Debate.
-    - Expires in 5 minutes.
+    - Unlike `/cs`, a Panic Talk Action (PTA) cannot evolve into a Scrum Debate, thus is more for 1-on-1 purposes.
+    - Starts an area timer for 5 minutes.
 * **concede** `<id>`
-    - Concede a trial minigame and withdraw from either team you're part of.
+    - Concede a trial minigame and withdraw from either team you're part of or end the minigame.
 ## Demo / Cutscenes
-* **demo [evidence id]** 
+* **demo** `[evidence id]`
 	- "Cutscenes", officially called 'Demos', can be created and played using demo files and evidence.
 	- The easiest way to do this is to turn 'Log To Demo Files' on in your client's Settings > Logging options.
 	- Then, on server, play out your cutscene using your preferred characters, effects and general actions. A date and time-stamped demo file is created in your client's "logs" folder in a folder named after the server once you connect:<br>
@@ -60,12 +60,13 @@ If you encounter any issues or bugs, please contact AOV staff via server Mod Cal
 	![Demo Evidence Text Example](https://cdn.discordapp.com/attachments/657301457086840837/1096387674887163964/demoFileExample.png)
 	- When finished, use `/demo [evidence name or ID]` to play the cutscene. Use `/demo` by itself to stop it.
 ## Case Advert Webhook
-* **need**
+* **need** `message`
 	- Sending an advert through `/need` will automatically post it to the AOV Community Server's #Case-Advertising channel.
 	- This will also include your current area as well as pinging any roles mentioned in the advert.
-	- eg. "/need defense, co-pro, and steno for case!" will ping the discord's Defense, Prosecution and Steno roles.
+		- Role pings that can be included are Defense, Prosecution, Judge, Witness/Detective (also includes Jury roles) and Stenographer. Shorter versions, such as "def" or "steno" are also recognised.
+	- eg. "/need defense, co-pro, and steno for case!" will ping the Discord's Defense, Prosecution and Stenographer roles.
 	- Putting "All roles" in the message will ping all roles.
-	- 'Arcade' will be pinged automatically if a `/need` is sent from an Arcade-named area.
+	- The 'Arcade' role will be pinged automatically if a `/need` is sent from an Arcade-named area.
 ## Testimony Commands
 **Note: Testimony recording can also be used from IC Chat as a CM - see "In-Character Commands" below.**
 * **testimony** `[id]`
