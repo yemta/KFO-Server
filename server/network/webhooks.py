@@ -113,9 +113,9 @@ class Webhooks:
         for key in ["bench", "benches"]:
             list = ping_list['def'], ping_list['pro']
             roles[key] = " ".join(map(str, list))
-        for key in ["def", "defense"]:
+        for key in ["def", "defense", "defender"]:
             roles[key] = ping_list['def']
-        for key in ["pro", "prosecution"]:
+        for key in ["pro", "prosecution", "prosecutor"]:
             roles[key] = ping_list['pro']
         for key in ["wit", "witness", "witnesses", "det", "detective", "jury", "juror", "jurors"]:
             roles[key] = ping_list['witdet']
