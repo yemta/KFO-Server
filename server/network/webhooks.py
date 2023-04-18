@@ -113,16 +113,19 @@ class Webhooks:
         for key in ["bench", "benches"]:
             list = ping_list['def'], ping_list['pro']
             roles[key] = " ".join(map(str, list))
-        for key in ["def", "defense", "defender"]:
+        for key in ["def", "defense", "defender", "defs", "defenses", "defenders"]:
             roles[key] = ping_list['def']
-        for key in ["pro", "prosecution", "prosecutor"]:
+        for key in ["pro", "prosecution", "prosecutor", "pros", "prosecutions", "prosecutors"]:
             roles[key] = ping_list['pro']
-        for key in ["wit", "witness", "witnesses", "det", "detective", "jury", "juror", "jurors"]:
+        for key in ["wit", "wits", "witness", "witnesses", "det", "dets", "detective", "detectives", "jury", "jur", "jurs", "juror", "jurors"]:
             roles[key] = ping_list['witdet']
-        for key in ["jud", "judge", "jooj"]:
+        for key in ["jud", "juds", "judge", "jooj", "judges", "joojs"]:
             roles[key] = ping_list['jud']
-        for key in ["steno", "stenographer"]:
+        for key in ["steno", "stenographer", "stenos", "stenographers"]:
             roles[key] = ping_list['steno']
+
+        all_roles = ping_list['def'], ping_list['pro'], ping_list['witdet'], ping_list['jud'], ping_list['steno']
+        all_pings = " ".join(map(str, all_roles))
 
         pings = []
         check = msg.lower()
@@ -131,9 +134,7 @@ class Webhooks:
             pings.append(ping_list["arcade"])
             caseF = False
         elif "all roles" in check:
-            for x in roles:
-                if x in roles and roles[x] not in pings:
-                    pings.append(roles[x])
+            pings.append(all_pings)
         else:
             for x in recheck:
                 if x in roles and roles[x] not in pings:
