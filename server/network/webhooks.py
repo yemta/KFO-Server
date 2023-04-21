@@ -203,7 +203,8 @@ class Webhooks:
         is_enabled = self.server.config["ban_webhook"]["enabled"]
         username = self.server.config["ban_webhook"]["username"]
         avatar_url = self.server.config["ban_webhook"]["avatar_url"]
-        unban_date = unban_date.strftime("%Y-%m-%d %H:%M:%S %Z")
+        if unban_date is not None:
+            unban_date = unban_date.strftime("%Y-%m-%d %H:%M:%S %Z")
 
         if not is_enabled:
             return
