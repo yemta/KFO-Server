@@ -11,15 +11,15 @@ from . import mod_only
 
 __all__ = [
     # Navigation
-    "ooc_cmd_hub",
-    # Saving/loading
-    "ooc_cmd_save_hub",
-    "ooc_cmd_load_hub",
-    "ooc_cmd_overlay_hub",
-    "ooc_cmd_list_hubs",
-    "ooc_cmd_clear_hub",
-    "ooc_cmd_rename_hub",
-    # Area Creation system
+    #"ooc_cmd_hub",
+    # Saving/loading - Hubs are dumb, kill them
+    #"ooc_cmd_save_hub",
+    #"ooc_cmd_load_hub",
+    #"ooc_cmd_overlay_hub",
+    #"ooc_cmd_list_hubs",
+    #"ooc_cmd_clear_hub",
+    #"ooc_cmd_rename_hub",
+    # Area Creation system - Might be cool
     "ooc_cmd_area_create",
     "ooc_cmd_area_remove",
     "ooc_cmd_area_rename",
@@ -40,9 +40,9 @@ __all__ = [
     "ooc_cmd_force_follow",
     "ooc_cmd_follow",
     "ooc_cmd_unfollow",
-    "ooc_cmd_info",
-    "ooc_cmd_gm",
-    "ooc_cmd_ungm",
+    #"ooc_cmd_info",
+    #"ooc_cmd_gm",
+    #"ooc_cmd_ungm",
     "ooc_cmd_broadcast",
     "ooc_cmd_clear_broadcast",
     "ooc_cmd_hpset",
@@ -274,7 +274,7 @@ def ooc_cmd_rename_hub(client, arg):
             "Invalid number of arguments. Use /rename_hub <name>.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_area_create(client, arg):
     """
     Create a new area.
@@ -297,7 +297,7 @@ def ooc_cmd_area_create(client, arg):
         raise
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_area_remove(client, arg):
     """
     Remove specified area by Area ID.
@@ -321,7 +321,7 @@ def ooc_cmd_area_remove(client, arg):
             "Invalid number of arguments. Use /area_remove <aid>.")
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_area_rename(client, arg):
     """
     Rename the area to <name>. The area is the one you're currently in
@@ -362,7 +362,7 @@ def ooc_cmd_area_rename(client, arg):
     client.send_ooc(f"Renamed area [{area.id}] to {area.name}.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_area_swap(client, arg):
     """
     Swap areas by Area IDs while correcting links to reference the right areas.
@@ -384,7 +384,7 @@ def ooc_cmd_area_swap(client, arg):
         raise
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_area_switch(client, arg):
     """
     Switch areas by Area IDs without correcting links.
@@ -406,7 +406,7 @@ def ooc_cmd_area_switch(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_area_pref(client, arg):
     """
     Toggle a preference on/off for an area.
@@ -489,7 +489,7 @@ def ooc_cmd_area_pref(client, arg):
         raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_area_move_delay(client, arg):
     """
     Set the area's move delay to a value in seconds. Can be negative.
@@ -515,7 +515,7 @@ def ooc_cmd_area_move_delay(client, arg):
         raise
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_hub_move_delay(client, arg):
     """
     Set the hub's move delay to a value in seconds. Can be negative.
@@ -542,7 +542,7 @@ def ooc_cmd_hub_move_delay(client, arg):
         raise
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_toggle_replace_music(client, arg):
     """
     Toggle the hub music list to replace the server's music list.
@@ -557,7 +557,7 @@ def ooc_cmd_toggle_replace_music(client, arg):
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_toggle_passing_ic(client, arg):
     """
     Toggle an IC message when changing areas for this hub.
@@ -570,7 +570,7 @@ def ooc_cmd_toggle_passing_ic(client, arg):
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_arup_enable(client, arg):
     """
     Enable the ARea UPdate system for this hub.
@@ -589,7 +589,7 @@ def ooc_cmd_arup_enable(client, arg):
         "ARUP system has been enabled for this hub.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_arup_disable(client, arg):
     """
     Disable the ARea UPdate system for this hub.
@@ -609,7 +609,7 @@ def ooc_cmd_arup_disable(client, arg):
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_toggle_getareas(client, arg):
     """
     Toggle the permissions of /getareas for normal players in this hub.
@@ -622,7 +622,7 @@ def ooc_cmd_toggle_getareas(client, arg):
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_toggle_spectate(client, arg):
     """
     Disable the ARea UPdate system for this hub.
@@ -635,7 +635,7 @@ def ooc_cmd_toggle_spectate(client, arg):
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_hide_clients(client, arg):
     """
     Hide the playercounts for this Hub's areas.
@@ -652,7 +652,7 @@ def ooc_cmd_hide_clients(client, arg):
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_unhide_clients(client, arg):
     """
     Unhide the playercounts for this Hub's areas.
@@ -669,7 +669,7 @@ def ooc_cmd_unhide_clients(client, arg):
     )
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_force_follow(client, arg):
     """
     Force someone to follow you, or someone else. Follow me!
@@ -833,6 +833,7 @@ def ooc_cmd_unfollow(client, arg):
         ooc_cmd_unfollow(client, "")
 
 
+@mod_only()
 def ooc_cmd_info(client, arg):
     """
     Check the information for the current Hub, or set it.
@@ -851,6 +852,7 @@ def ooc_cmd_info(client, arg):
         database.log_area("info.change", client, client.area, message=arg)
 
 
+@mod_only()
 def ooc_cmd_gm(client, arg):
     """
     Add a game master for the current Hub.
@@ -910,7 +912,7 @@ def ooc_cmd_gm(client, arg):
         raise ClientError("You must be authorized to do that.")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_ungm(client, arg):
     """
     Remove a game master from the current Hub.
@@ -940,7 +942,7 @@ def ooc_cmd_ungm(client, arg):
             raise
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_broadcast(client, arg):
     """
     Start broadcasting your IC, Music and Judge buttons to specified area ID's.
@@ -984,7 +986,7 @@ def ooc_cmd_clear_broadcast(client, arg):
     client.send_ooc("Your broadcast list has been cleared.")
 
 
-@mod_only(area_owners=True)
+@mod_only()
 def ooc_cmd_hpset(client, arg):
     """
     Set hp in area or multiple areas.

@@ -20,6 +20,7 @@
 import re
 import string
 import time
+import hashlib
 import math
 import os
 from heapq import heappop, heappush
@@ -58,6 +59,10 @@ class ClientManager:
             self.evi_list = []
             self.disemvowel = False
             self.shaken = False
+            self.gimp = False
+            self.rainbow = False
+            self.emoji = False
+            self.dank = False
             self.charcurse = []
             self.muted_global = False
             self.muted_adverts = False
@@ -125,14 +130,14 @@ class ClientManager:
             # movement system stuff
             self.last_move_time = 0
             # If true, /getarea is called automatically when moving into a new area
-            self.autogetarea = True
+            self.autogetarea = False
 
             # client status stuff
             self._showname = ""
             self.blinded = False
             self._hidden = False
             self.hidden_in = None
-            self.sneaking = False
+            self.sneaking = True
             self.listen_pos = None
             self.following = None
             self.forced_to_follow = False
@@ -186,9 +191,6 @@ class ClientManager:
             # The currently playing audio for this client. Keeping track so we don't replay the same audio erroneously
             # (such as in the case of music_autoplay areas)
             self.playing_audio = ["", ""]
-            
-            # rainbowtext hell
-            self.rainbow = False
 
         def send_raw_message(self, msg):
             """
@@ -260,7 +262,7 @@ class ClientManager:
             """Send the message of the day to the client."""
             motd = self.server.config["motd"]
             if motd != "":
-                self.send_ooc(f"📟MOTD📟\r\n{motd}\r\n")
+                self.send_ooc(f"===MOTD===\r\n{motd}\r\n")
 
         def send_hub_info(self):
             """Send the hub info to the client."""
@@ -277,7 +279,7 @@ class ClientManager:
             """
             players = self.server.player_count
             limit = self.server.config["playerlimit"]
-            self.send_ooc(f"👥{players}/{limit} players online.")
+            self.send_ooc(f"{players}/{limit} players online.")
 
         def is_valid_name(self, name):
             """
@@ -341,6 +343,7 @@ class ClientManager:
                     1) and self.char_id != char_id
             self.char_id = char_id
             self.pos = ""
+            self.area.shadow_status[self.char_id] = [self.ipid, self.hdid]
             self.send_command("PV", self.id, "CID", self.char_id)
             # Commented out due to potentially causing clientside lag...
             # self.area.send_command('CharsCheck',
@@ -539,7 +542,8 @@ class ClientManager:
                             return
                         area.play_music(name, self.char_id,
                                         length, showname, effects)
-                        area.add_music_playing(self, name, showname)
+                        area.add_music_playing(self, name)
+                        area.add_to_musiclog(self, name)
                 # We only make one log entry to not CBT the log list. TODO: Broadcast logs
                 database.log_area("music", self, self.area, message=name)
             except ServerError:
@@ -673,7 +677,7 @@ class ClientManager:
                 if self.area.area_manager.replace_music:
                     song_list = self.area.area_manager.music_list
                 else:
-                    song_list = song_list + self.area.area_manager.music_list
+                    song_list = self.area.area_manager.music_list + song_list
 
             # Area music list
             if (
@@ -684,7 +688,7 @@ class ClientManager:
                 if self.area.replace_music:
                     song_list = self.area.music_list
                 else:
-                    song_list = song_list + self.area.music_list
+                    song_list = self.area.music_list + song_list
 
             # Client music list
             if (
@@ -700,7 +704,7 @@ class ClientManager:
                 if self.replace_music:
                     song_list = self.music_list
                 else:
-                    song_list = song_list + self.music_list
+                    song_list = self.music_list + song_list
 
             return song_list
 
@@ -831,6 +835,9 @@ class ClientManager:
             # Get prosecution HP bar
             self.send_command("HP", 2, self.area.hp_pro)
 
+            # Update Lastchar Information
+            self.area.shadow_status[self.char_id] = [self.ipid, self.hdid]
+
             # Send the background information
             if self.area.dark:
                 self.send_command("BN", self.area.background_dark, self.pos)
@@ -845,12 +852,12 @@ class ClientManager:
             # Update our judge buttons
             self.area.update_judge_buttons(self)
             self.refresh_music()
-            msg = f"🚶Changed to area: {self.get_area_info(self.area.id)}"
+            msg = f"Changed area to {self.get_area_info(self.area.id)}"
             if self.area.desc != "" and not self.blinded:
                 desc = self.area.desc[:128]
                 if len(self.area.desc) > len(desc):
                     desc += "... Use /desc to read the rest."
-                msg += f"\n📃Description: {desc}"
+                msg += f"\nDescription: {desc}"
             if self.autogetarea and not self.blinded:
                 try:
                     area_clients = self.get_area_clients(self.area.id)
@@ -1035,117 +1042,6 @@ class ClientManager:
                         c.unfollow()
                         return
 
-            reason = ""
-            if (
-                not self.area.dark
-                and not self.area.force_sneak
-                and not self.sneaking
-                and not self.hidden
-            ):
-                if not old_area.dark and not old_area.force_sneak:
-                    if old_area.area_manager == self.area.area_manager:
-                        if self.area.area_manager.passing_msg is True:
-                            old_area.send_ic(
-                                msg=f'~~{"}}}"}[º{self.showname}º leaves to º{area.name}º.]',
-                                emote_mod=1,
-                            )
-                        for c in old_area.clients:
-                            # Check if the GMs should really see this msg
-                            if c in old_area.owners and c.remote_listen in [2, 3]:
-                                continue
-                            c.send_command(
-                                "CT",
-                                self.server.config["hostname"],
-                                f"[{self.id}] {self.showname} leaves to [{self.area.id}] {self.area.name}.",
-                                "1",
-                            )
-                    else:
-                        old_area.send_command(
-                            "CT",
-                            self.server.config["hostname"],
-                            f"[{self.id}] {self.showname} leaves to Hub [{self.area.area_manager.id}] {self.area.area_manager.name}.",
-                            "1",
-                        )
-                        old_area.send_owner_command(
-                            "CT",
-                            self.server.config["hostname"],
-                            f"[{self.id}] {self.showname} leaves to Hub [{self.area.area_manager.id}] {self.area.area_manager.name}",
-                            "1",
-                        )
-
-                desc = "."
-                if self.desc != "":
-                    desc = ": " + self.desc
-                    # Find the first sentence (assuming it ends in a period).
-                    if desc.find(".") != -1:
-                        desc = " " + self.desc[: desc.find(".") + 1]
-                    # Limit that to 64 chars
-                    desc = desc[:64]
-                    if len(self.desc) > 64:
-                        desc += f"... Use /chardesc {self.id} to read the rest."
-                if old_area.area_manager == self.area.area_manager:
-                    self.area.send_command(
-                        "CT",
-                        self.server.config["hostname"],
-                        f"[{self.id}] {self.showname} enters from [{old_area.id}] {old_area.name}{desc}",
-                        "1",
-                    )
-                    if self.area.area_manager.passing_msg is True:
-                        self.area.send_ic(
-                            msg=f'~~{"}}}"}[º{self.showname}º enters from º{old_area.name}º.]',
-                            emote_mod=1,
-                        )
-                else:
-                    self.area.send_command(
-                        "CT",
-                        self.server.config["hostname"],
-                        f"[{self.id}] {self.showname} enters from Hub [{old_area.area_manager.id}] {old_area.area_manager.name}{desc}",
-                        "1",
-                    )
-                    self.area.send_owner_command(
-                        "CT",
-                        self.server.config["hostname"],
-                        f"[{self.id}] {self.showname} enters from Hub [{old_area.area_manager.id}] {old_area.area_manager.name}",
-                        "1",
-                    )
-            else:
-                if self.sneaking:
-                    reason = " (sneaking)"
-                if self.hidden:
-                    reason = " (hidden)"
-                if self.area.force_sneak:
-                    reason = " (new area forces sneaking)"
-                if self.area.dark:
-                    reason = " (new area is dark)"
-                for c in self.area.owners:
-                    if c == self:
-                        continue
-                    if old_area.area_manager == self.area.area_manager:
-                        if c in self.area.clients:
-                            c.send_ooc(
-                                f"[{self.id}] {self.showname} enters unannounced from [{old_area.id}] {old_area.name}{reason}"
-                            )
-                    else:
-                        c.send_ooc(
-                            f"[{self.id}] {self.showname} enters unannounced from Hub [{old_area.area_manager.id}] {old_area.area_manager.name}{reason}"
-                        )
-
-                if old_area.area_manager != self.area.area_manager:
-                    for c in old_area.owners:
-                        if c == self:
-                            continue
-                        c.send_ooc(
-                            f"[{self.id}] {self.showname} leaves unannounced to Hub [{self.area.area_manager.id}] {self.area.area_manager.name}{reason}"
-                        )
-
-            if old_area.area_manager == self.area.area_manager:
-                self.area.send_owner_command(
-                    "CT",
-                    self.server.config["hostname"],
-                    f"[{self.id}] {self.showname} moves from [{old_area.id}] {old_area.name} to [{self.area.id}] {self.area.name}.{reason}",
-                    "1",
-                )
-
             if self.area.cannot_ic_interact(self):
                 self.send_ooc(
                     "This area is muted - you cannot talk in-character unless invited."
@@ -1190,7 +1086,7 @@ class ClientManager:
 
         def send_area_list(self, full=False):
             """Send a list of areas over OOC."""
-            msg = "🗺️ Areas 🗺️"
+            msg = "Areas"
             area_list = self.get_area_list(full, full)
             for _, area in enumerate(area_list):
                 if area.hidden:
@@ -1302,9 +1198,7 @@ class ClientManager:
                     if c.hidden_in is not None:
                         name = f":{c.area.evi_list.evidences[c.hidden_in].name}"
                     info += f"📦{name}"
-                if c.is_mod:
-                    info += "[M]"
-                elif c in area.area_manager.owners:
+                if c in area.area_manager.owners:
                     info += "[GM]"
                 elif c in area._owners:
                     info += "[CM]"
@@ -1313,11 +1207,11 @@ class ClientManager:
                     info += f'"{c.showname}" ({c.char_name})'
                 else:
                     info += f"{c.showname}"
-                if c.pos != "":
-                    info += f" <{c.pos}>"
+                #if c.pos != "":
+                #    info += f" <{c.pos}>"
                 if self.is_mod:
                     info += f" ({c.ipid})"
-                if c.name != "" and (self.is_mod or self in area.owners):
+                if c.name != "" and (self.is_mod):
                     info += f": {c.name}"
             return info
 
@@ -1339,7 +1233,7 @@ class ClientManager:
                     raise ClientError(
                         "You cannot see players in all areas in this hub!")
 
-            info = "🗺️ Clients in Areas 🗺️\n"
+            info = "= Clients in All Areas =\n"
             cnt = 0
             for i in range(len(self.area.area_manager.areas)):
                 area = self.area.area_manager.areas[i]
@@ -1350,6 +1244,8 @@ class ClientManager:
                 if not self.is_mod and self not in area.owners:
                     # We exclude hidden players here because we don't want them to count for the user count
                     client_list = [c for c in client_list if not c.hidden]
+                if mods:
+                    client_list = [c for c in client_list if c.is_mod]
 
                 area_info = f'{self.get_area_info(i)}:'
                 if area_info == "":
@@ -1385,7 +1281,7 @@ class ClientManager:
             if not self.is_mod and self not in self.area.owners:
                 if self.blinded:
                     raise ClientError("You are blinded!")
-            area_info = f'📍 Clients in {self.get_area_info(area_id)} 📍'
+            area_info = f'= Clients in {self.get_area_info(area_id)} ='
             try:
                 area_info += self.get_area_clients(area_id, mods, afk_check)
             except ClientError as ex:
@@ -1683,19 +1579,108 @@ class ClientManager:
             parts = message.split()
             random.shuffle(parts)
             return " ".join(parts)
-
+        
+        def gimp_message(self, message):
+            """Send a random message instead of entered text"""
+            import random
+            message = self.server.gimp_list
+            return random.choice(message)
+        
         def rainbow_message(self, message):
-            """Turn the message into rainbows (base color assumed to be blue)"""
-            # red orange yellow green cyan blue magenta
-            color_array = ['~', '|', 'º', '`', '√', '', '№']
-            constructed_message = ''
-            # pseudo-randomize the rainbows based on msg length
-            index = len(message) % len(color_array)
-            for symbol in message:
-                symbol = f'{color_array[index]}{symbol}{color_array[index]}'
-                constructed_message += symbol
-                index = (index + 1) % len(color_array)
-            return constructed_message
+            """Rainbow color a message."""
+            # enumerate
+            import random
+            colors = ["~", "|", "º", "`", "√", "_", "№"]
+            parts = list(message)
+            return ''.join(random.choice(colors)+'{}'.format(x) for x in parts)
+
+        def emoji_message(self, message):
+            """Emojify a message."""
+            import random
+            meme = ['😂', '🙏', '👏', '🙌🏻', '🤪', '😱', '💯', '😭']
+            rm = random.choice(meme)
+            defense = ["🤡", "🛡️", "🎪"]
+            prosecution = ["🧱", "⚔️", "🔯"]
+            okay = ["👌", "👌🏿", "🆗"]
+            select = {"cool": "🆒",
+                      "huh": "🗿",
+                      "defense": random.choice(defense), 
+                      "ok": random.choice(okay),
+                      "prosecution": random.choice(prosecution),
+                      "prosecutor": random.choice(prosecution),
+                      "relevance": "🐘",
+                      "rlvns": "🐘",
+                      "evidence": "🧾",
+                      "ebdns": "🧾",
+                      "case": "💼",
+                      "nice": "👍",
+                      "dead": "💀",
+                      "poison": "🧪☠️",
+                      "turkey": "🦃❤️🥰",
+                      "bat": "🦇",
+                      "keyboard": "⌨️🔨",
+                      "card": "🃏",
+                      "fingerprint": "🖐️👑",
+                      "cammy": "🥛🥛",
+                      "asspull": "🍑🤏",
+                      "lsp": "👩‍❤️‍👩",
+                      "cuck": "😨✋🏿🧑🏿👩",
+                      "based": "💪😎",
+                      "4chan": "🍀🚚💥",
+                      "reddit": "⬆️🥇",
+                      "banned": "🦄⛔",
+                      "japanifornia": "🍣🍔",
+                      "chicken": "🐔",
+                      "lewdton": "🎩🍆💦",
+                      "knifecopter": "🔪🚁",
+                      "ramranch": "🐏🏚️",
+                      "dog": "🐶",
+                      "cat": "🐱",
+                      "pee": "🌊",
+                      "free": "🆓",
+                      "soon": "🔜™",
+                      "oh": "😭",
+                      "banana": "🍌",
+                      "grosspearl": "👴👧",
+                      "italy": "🍕🍝",
+                      "italian": "🍕🍝",
+                      "china": "🥶🍦",
+                      "france": "🥖🥐",
+                      "french": "🥖🥐",
+                      "england": "🔪⚽",
+                      "america": "🧒🔫",
+                      "usa": "✈️🏢🏢",
+                      "europe": "🏳️‍🌈⚣",
+                      "europoor": "🌈⚣",
+                      "alpaca": "🦙💨", 
+                      "blood": "🩸🩸",
+                      "mod": "💩",
+                      "objection": "🤓❗",
+                      "steamed": "♨️",
+                      "hams": "🍔",
+                      "witness": "👀👀",
+                      "netflix": "👨‍⚖️📺",
+                      "judge": "👨‍⚖️📺",
+                      "detective": "🔍🎁",
+                      "multiwit": "🤹🤹",
+                      "steno": "📝😫",
+                      "suspect": "sussy ඞඞඞ",
+                      "lmao": "😂😂",
+                      "nigg": "🏀🧑🏿",
+                      "haha": "😂😂",
+                      "rat": "🐀",
+                      "birthday": "🎂"
+                      } 
+
+            parts = message.lower()
+            for x in select:
+                if x in parts:
+                    message = re.sub(x, select[x], message, flags=re.IGNORECASE)
+            message = re.sub('[bp]', '\U0001F171', message, flags=re.IGNORECASE)
+            message = message.replace("?", "❓")
+            message = message.replace("!", "❗")
+            message += " " + rm + rm + rm
+            return message
 
     def __init__(self, server):
         self.clients = set()
@@ -1722,6 +1707,12 @@ class ClientManager:
             raise ClientError
 
         peername = transport.get_extra_info("peername")[0]
+
+        # hash IP into previous system's IPID system to maintain old banlist
+        if 'server_number' in self.server.config:
+            x = peername + str(self.server.config['server_number'])
+            hash_object = hashlib.sha256(x.encode('utf-8'))
+            peername = hash_object.hexdigest()[:12]
 
         c = self.Client(self.server, transport, user_id,
                         database.ipid(peername))

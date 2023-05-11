@@ -9,11 +9,12 @@ from . import mod_only
 __all__ = [
     "ooc_cmd_currentmusic",
     "ooc_cmd_getmusic",
+    "ooc_cmd_musiclog",
     "ooc_cmd_jukebox_toggle",
     "ooc_cmd_jukebox_skip",
     "ooc_cmd_jukebox",
     "ooc_cmd_play",
-    "ooc_cmd_play_once",
+    "ooc_cmd_play1",
     "ooc_cmd_blockdj",
     "ooc_cmd_unblockdj",
     "ooc_cmd_musiclists",
@@ -70,6 +71,25 @@ def ooc_cmd_getmusic(client, arg):
     client.send_ooc(f"Playing track '{client.area.music}'.")
 
 
+def ooc_cmd_musiclog(client, arg):
+    """
+    Show the last 5 songs played through the /play command.
+    Usage: /musiclog
+    """
+    if len(arg) != 0:
+        raise ArgumentError('This command has no arguments.')
+    mlog = client.area.musiclog
+    if len(mlog) > 0:
+        mlog_msg = '== Music Log =='
+        for x in mlog:
+            mlog_msg += f'\r\n{x}'
+        client.send_ooc(mlog_msg)
+    else:
+        raise ServerError(
+            'No songs have been /play-ed in this area since start of session.'
+        )
+
+
 @mod_only(area_owners=True)
 def ooc_cmd_jukebox_toggle(client, arg):
     """
@@ -83,7 +103,7 @@ def ooc_cmd_jukebox_toggle(client, arg):
     client.area.jukebox_votes = []
     client.area.broadcast_ooc(
         "{} [{}] has set the jukebox to {}.".format(
-            client.showname, client.id, client.area.jukebox
+            client.char_name, client.id, client.area.jukebox
         )
     )
     database.log_area(
@@ -108,13 +128,13 @@ def ooc_cmd_jukebox_skip(client, arg):
     if len(client.area.jukebox_votes) == 1:
         client.area.broadcast_ooc(
             "{} [{}] has forced a skip, restarting the only jukebox song.".format(
-                client.showname, client.id
+                client.char_name, client.id
             )
         )
     else:
         client.area.broadcast_ooc(
             "{} [{}] has forced a skip to the next jukebox song.".format(
-                client.showname, client.id
+                client.char_name, client.id
             )
         )
     database.log_area("jukebox_skip", client, client.area)
@@ -158,7 +178,7 @@ def ooc_cmd_jukebox(client, arg):
                     first = False
                 else:
                     message += ", "
-                message += voter.showname + " [" + str(voter.id) + "]"
+                message += voter.char_name + " [" + str(voter.id) + "]"
                 if client.is_mod:
                     message += "(" + str(voter.ipid) + ")"
             message += "\n"
@@ -172,6 +192,7 @@ def ooc_cmd_jukebox(client, arg):
         client.send_ooc(f"The jukebox has the following songs in it:{message}")
 
 
+@mod_only(area_owners=True)
 def ooc_cmd_play(client, arg):
     """
     Play a track and loop it. See /play_once for this command without looping.
@@ -183,7 +204,8 @@ def ooc_cmd_play(client, arg):
                         True)  # looped change music
 
 
-def ooc_cmd_play_once(client, arg):
+@mod_only(area_owners=True)
+def ooc_cmd_play1(client, arg):
     """
     Play a track without looping it. See /play for this command with looping.
     Usage: /play_once <name>
@@ -243,19 +265,20 @@ def ooc_cmd_unblockdj(client, arg):
 
 def ooc_cmd_musiclists(client, arg):
     """
-    Displays all the available music lists.
+    Displays all the available server music lists.
     Usage: /musiclists
     """
     text = "Available musiclists:"
     from os import listdir
 
     for F in listdir("storage/musiclists/"):
-        if F.lower().endswith(".yaml"):
-            text += "\n- {}".format(F[:-5])
+            if F.lower().endswith(".yaml"):
+                text += "\n- {}".format(F[:-5])
 
     client.send_ooc(text)
 
 
+@mod_only(area_owners=True)
 def ooc_cmd_musiclist(client, arg):
     """
     Load a client-side music list. Pass no arguments to reset. /musiclists to see available lists.
@@ -299,7 +322,7 @@ def ooc_cmd_area_musiclist(client, arg):
         client.send_ooc("File not found!")
 
 
-@mod_only(hub_owners=True)
+@mod_only()
 def ooc_cmd_hub_musiclist(client, arg):
     """
     Load a hub-wide music list. Pass no arguments to reset. /musiclists to see available lists.

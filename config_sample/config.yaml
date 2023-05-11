@@ -116,8 +116,10 @@ bridgebot:
 
 # Whether or not Discord webhooks are enabled, and if they are, the webhook URL to use.
 # If webhooks_enabled is set to false, no webhooks will function regardless of whether they are enabled or not.
-webhooks_enabled: false
+webhooks_enabled: true
 webhook_url: example.com
+modcall_url: example.com
+advert_url: example.com
 
 # Settings for the modcall webhook. Leaving a setting blank will use its default behavior.
 modcall_webhook:
@@ -126,6 +128,7 @@ modcall_webhook:
   avatar_url: # url of a custom avatar image, leave blank to use the avatar the webhook was set up with
   ping_on_no_mods: false # whether or not to ping mods if a modcall is received while no moderators are online
   mod_role_id: # the role ID of the role you want pinged. leave blank to use @here instead
+  color: "16777215"
 
 kick_webhook:
   enabled: true
@@ -141,3 +144,15 @@ unban_webhook:
   enabled: true
   username: Unban
   avatar_url:
+
+warn_webhook:
+  enabled: true
+  username: Warn
+  avatar_url:
+  
+advert_webhook:
+  enabled: true
+  username: CASE ADVERT 
+  avatar_url: 
+  case_color: "39168"
+  game_color: "6697983"
